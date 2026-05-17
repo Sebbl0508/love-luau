@@ -280,7 +280,7 @@ static int iter_aux (lua_State *L) {
 
 static int iter_codes (lua_State *L) {
   luaL_checkstring(L, 1);
-  lua_pushcfunction(L, iter_aux);
+  lua_pushcfunction(L, iter_aux, "iter_aux");
   lua_pushvalue(L, 1);
   lua_pushinteger(L, 0);
   return 3;
@@ -314,7 +314,7 @@ int luaopen_luautf8 (lua_State *L) {
   lua_createtable(L, 0, (int) (sizeof(funcs) / sizeof(luaL_Reg)) - 1);
   for (l = funcs; l->name != NULL; l++) {
     if (l->func != NULL) {
-      lua_pushcfunction(L, l->func);
+      lua_pushcfunction(L, l->func, l->name);
       lua_setfield(L, -2, l->name);
     }
   }

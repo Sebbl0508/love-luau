@@ -61,7 +61,7 @@ LUASOCKET_API int luaopen_socket_serial(lua_State *L) {
     auxiliar_newclass(L, "serial{client}", serial_methods);
     /* create class groups */
     auxiliar_add2group(L, "serial{client}", "serial{any}");
-    lua_pushcfunction(L, global_create);
+    lua_pushcfunction(L, global_create, "global_create");
     return 1;
 }
 

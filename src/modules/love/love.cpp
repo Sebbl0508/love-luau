@@ -564,36 +564,36 @@ int luaopen_love(lua_State *L)
 #endif
 
 #ifdef LOVE_LEGENDARY_CONSOLE_IO_HACK
-	lua_pushcfunction(L, w__openConsole);
+	lua_pushcfunction(L, w__openConsole, "_openConsole");
 	lua_setfield(L, -2, "_openConsole");
 #endif // LOVE_LEGENDARY_CONSOLE_IO_HACK
 
-	lua_pushcfunction(L, w__setGammaCorrect);
+	lua_pushcfunction(L, w__setGammaCorrect, "_setGammaCorrect");
 	lua_setfield(L, -2, "_setGammaCorrect");
 
-	lua_pushcfunction(L, w__getDefaultRenderers);
+	lua_pushcfunction(L, w__getDefaultRenderers, "_getDefaultRenderers");
 	lua_setfield(L, -2, "_getDefaultRenderers");
 
-	lua_pushcfunction(L, w__getRenderers);
+	lua_pushcfunction(L, w__getRenderers, "_getRenderers");
 	lua_setfield(L, -2, "_getRenderers");
 
-	lua_pushcfunction(L, w__setRenderers);
+	lua_pushcfunction(L, w__setRenderers, "_setRenderers");
 	lua_setfield(L, -2, "_setRenderers");
 
-	lua_pushcfunction(L, w__setLowPowerPreferred);
+	lua_pushcfunction(L, w__setLowPowerPreferred, "_setLowPowerPreferred");
 	lua_setfield(L, -2, "_setLowPowerPreferred");
 
-	lua_pushcfunction(L, w__setHighDPIAllowed);
+	lua_pushcfunction(L, w__setHighDPIAllowed, "_setHighDPIAllowed");
 	lua_setfield(L, -2, "_setHighDPIAllowed");
 
-	lua_pushcfunction(L, w__setTrackpadTouch);
+	lua_pushcfunction(L, w__setTrackpadTouch, "_setTrackpadTouch");
 	lua_setfield(L, -2, "_setTrackpadTouch");
 
 	// Exposed here because we need to be able to call it before the audio
 	// module is initialized.
-	lua_pushcfunction(L, w__setAudioMixWithSystem);
+	lua_pushcfunction(L, w__setAudioMixWithSystem, "_setAudioMixWithSystem");
 	lua_setfield(L, -2, "_setAudioMixWithSystem");
-	lua_pushcfunction(L, w__requestRecordingPermission);
+	lua_pushcfunction(L, w__requestRecordingPermission, "_requestRecordingPermission");
 	lua_setfield(L, -2, "_requestRecordingPermission");
 
 	lua_newtable(L);
@@ -606,10 +606,10 @@ int luaopen_love(lua_State *L)
 
 	lua_setfield(L, -2, "_version_compat");
 
-	lua_pushcfunction(L, w_love_getVersion);
+	lua_pushcfunction(L, w_love_getVersion, "getVersion");
 	lua_setfield(L, -2, "getVersion");
 
-	lua_pushcfunction(L, w_love_isVersionCompatible);
+	lua_pushcfunction(L, w_love_isVersionCompatible, "isVersionCompatible");
 	lua_setfield(L, -2, "isVersionCompatible");
 
 #ifdef LOVE_ENABLE_SYSTEM
@@ -627,19 +627,19 @@ int luaopen_love(lua_State *L)
 		lua_newuserdata(L, sizeof(int));
 
 		luaL_newmetatable(L, "love_deprecation");
-		lua_pushcfunction(L, w_deprecation__gc);
+		lua_pushcfunction(L, w_deprecation__gc, "__gc");
 		lua_setfield(L, -2, "__gc");
 		lua_setmetatable(L, -2);
 
 		lua_setfield(L, -2, "_deprecation");
 
-		lua_pushcfunction(L, w_love_markDeprecated);
+		lua_pushcfunction(L, w_love_markDeprecated, "markDeprecated");
 		lua_setfield(L, -2, "markDeprecated");
 
-		lua_pushcfunction(L, w_love_setDeprecationOutput);
+		lua_pushcfunction(L, w_love_setDeprecationOutput, "setDeprecationOutput");
 		lua_setfield(L, -2, "setDeprecationOutput");
 
-		lua_pushcfunction(L, w_love_hasDeprecationOutput);
+		lua_pushcfunction(L, w_love_hasDeprecationOutput, "hasDeprecationOutput");
 		lua_setfield(L, -2, "hasDeprecationOutput");
 	}
 

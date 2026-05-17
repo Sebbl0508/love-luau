@@ -128,7 +128,7 @@ extern "C" int HTTPS_DLLEXPORT luaopen_https(lua_State *L)
 {
 	lua_newtable(L);
 
-	lua_pushcfunction(L, w_request);
+	lua_pushcfunction(L, w_request, "request");
 	lua_setfield(L, -2, "request");
 
 	return 1;

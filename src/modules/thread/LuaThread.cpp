@@ -77,7 +77,7 @@ void LuaThread::threadFunction()
 	luax_require(L, "love.filesystem");
 	lua_pop(L, 1);
 
-	lua_pushcfunction(L, luax_traceback);
+	lua_pushcfunction(L, luax_traceback, "luax_traceback");
 	int tracebackidx = lua_gettop(L);
 
 	if (luaL_loadbuffer(L, (const char *) code->getData(), code->getSize(), name.c_str()) != 0)

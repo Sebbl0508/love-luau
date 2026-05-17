@@ -748,7 +748,7 @@ int w_lines(lua_State *L)
 
 	lua_pushstring(L, ""); // buffer
 	lua_pushstring(L, 0); // buffer offset
-	lua_pushcclosure(L, w_File_lines_i, 3);
+	lua_pushcclosure(L, w_File_lines_i, "file_lines_i", 3);
 	return 1;
 }
 
@@ -1063,7 +1063,7 @@ int extloader(lua_State *L)
 		return 1;
 	}
 
-	lua_pushcfunction(L, (lua_CFunction) func);
+	lua_pushcfunction(L, (lua_CFunction) func, lovefunc.c_str());
 	return 1;
 }
 

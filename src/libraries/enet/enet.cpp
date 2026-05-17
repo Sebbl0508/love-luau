@@ -127,7 +127,7 @@ static bool supports_full_lightuserdata(lua_State *L)
 			// Try to push pointer with all bits set.
 			lua_pushlightuserdata(L, (void*)(~((size_t)0)));
 			return 1;
-		}, 0);
+		}, "idk", 0);
 
 		supported = lua_pcall(L, 0, 1, 0) == 0;
 		checked = true;
@@ -920,14 +920,14 @@ int luaopen_enet(lua_State *l) {
 	lua_newtable(l); // index
 	luax_register(l, NULL, enet_host_funcs);
 	lua_setfield(l, -2, "__index");
-	lua_pushcfunction(l, host_gc);
+	lua_pushcfunction(l, host_gc, "__gc");
 	lua_setfield(l, -2, "__gc");
 
 	luaL_newmetatable(l, "enet_peer");
 	lua_newtable(l);
 	luax_register(l, NULL, enet_peer_funcs);
 	lua_setfield(l, -2, "__index");
-	lua_pushcfunction(l, peer_tostring);
+	lua_pushcfunction(l, peer_tostring, "__tostring");
 	lua_setfield(l, -2, "__tostring");
 
 	// set up peer table

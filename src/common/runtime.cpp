@@ -110,7 +110,7 @@ static bool luax_isfulllightuserdatasupported(lua_State *L)
 			// Try to push pointer with all bits set.
 			lua_pushlightuserdata(L, (void *) (~((size_t) 0)));
 			return 1;
-		}, 0);
+		}, "idk", 0);
 
 		supported = lua_pcall(L, 0, 1, 0) == 0;
 		checked = true;
@@ -433,7 +433,7 @@ void luax_setfuncs(lua_State *L, const luaL_Reg *l)
 
 	for (; l->name != nullptr; l++)
 	{
-		lua_pushcfunction(L, l->func);
+		lua_pushcfunction(L, l->func, l->name);
 		lua_setfield(L, -2, l->name);
 	}
 }
@@ -460,7 +460,7 @@ int luax_register_module(lua_State *L, const WrappedModule &m)
 	luaL_newmetatable(L, m.module->getName());
 	lua_pushvalue(L, -1);
 	lua_setfield(L, -2, "__index");
-	lua_pushcfunction(L, w__gc);
+	lua_pushcfunction(L, w__gc, "__gc");
 	lua_setfield(L, -2, "__gc");
 
 	lua_setmetatable(L, -2);
@@ -495,7 +495,7 @@ int luax_preload(lua_State *L, lua_CFunction f, const char *name)
 {
 	lua_getglobal(L, "package");
 	lua_getfield(L, -1, "preload");
-	lua_pushcfunction(L, f);
+	lua_pushcfunction(L, f, name);
 	lua_setfield(L, -2, name);
 	lua_pop(L, 2);
 	return 0;
@@ -537,33 +537,33 @@ int luax_register_type(lua_State *L, love::Type *type, ...)
 	lua_setfield(L, -2, "__index");
 
 	// setup gc
-	lua_pushcfunction(L, w__gc);
+	lua_pushcfunction(L, w__gc, "__gc");
 	lua_setfield(L, -2, "__gc");
 
 	// Add equality
-	lua_pushcfunction(L, w__eq);
+	lua_pushcfunction(L, w__eq, "__eq");
 	lua_setfield(L, -2, "__eq");
 
 	// Add tostring function.
 	lua_pushstring(L, type->getName());
-	lua_pushcclosure(L, w__tostring, 1);
+	lua_pushcclosure(L, w__tostring, "__tostring", 1);
 	lua_setfield(L, -2, "__tostring");
 
 	// Add type
 	lua_pushstring(L, type->getName());
-	lua_pushcclosure(L, w__type, 1);
+	lua_pushcclosure(L, w__type, "type", 1);
 	lua_setfield(L, -2, "type");
 
 	// Add typeOf
-	lua_pushcfunction(L, w__typeOf);
+	lua_pushcfunction(L, w__typeOf, "typeOf");
 	lua_setfield(L, -2, "typeOf");
 
 	// Add release
-	lua_pushcfunction(L, w__release);
+	lua_pushcfunction(L, w__release, "release");
 	lua_setfield(L, -2, "release");
 
 	// Add __close for lua 5.4 (just calls release)
-	lua_pushcfunction(L, w__release);
+	lua_pushcfunction(L, w__release, "__close");
 	lua_setfield(L, -2, "__close");
 
 	va_list fs;
@@ -635,7 +635,7 @@ int luax_register_searcher(lua_State *L, lua_CFunction f, int pos)
 		luaL_error(L, "Can't register searcher: package.loaders table does not exist.");
 		return -1;
 
-	lua_pushcfunction(L, f);
+	lua_pushcfunction(L, f, "idk_searcher");
 	luax_table_insert(L, -2, -1, pos);
 	lua_pop(L, 3);
 	return 0;
@@ -661,7 +661,7 @@ void luax_rawnewtype(lua_State *L, love::Type &type, love::Object *object)
 	// module loaded will still clean the object up when it's collected.
 	if (!has_gc)
 	{
-		lua_pushcfunction(L, w__gc);
+		lua_pushcfunction(L, w__gc, "__gc");
 		lua_setfield(L, -2, "__gc");
 	}
 

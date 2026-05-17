@@ -60,7 +60,7 @@ LUASOCKET_API int luaopen_socket_unix(lua_State *L)
 
     /* Add a backwards compatibility function and a metatable setup to call it
      * for the old socket.unix() interface. */
-    lua_pushcfunction(L, compat_socket_unix_call);
+    lua_pushcfunction(L, compat_socket_unix_call, "compat_socket_unix_call");
     lua_setfield(L, socket_unix_table, "__call");
     lua_pushvalue(L, socket_unix_table);
     lua_setmetatable(L, socket_unix_table);

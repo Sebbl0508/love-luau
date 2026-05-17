@@ -13,7 +13,7 @@ void luasocket_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
     lua_pushstring(L, l->name);
     for (i = 0; i < nup; i++)  /* copy upvalues to the top */
       lua_pushvalue(L, -(nup+1));
-    lua_pushcclosure(L, l->func, nup);  /* closure with those upvalues */
+    lua_pushcclosure(L, l->func, l->name, nup);  /* closure with those upvalues */
     lua_settable(L, -(nup + 3));
   }
   lua_pop(L, nup);  /* remove upvalues */

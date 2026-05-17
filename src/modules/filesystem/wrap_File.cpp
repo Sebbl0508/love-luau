@@ -376,7 +376,7 @@ int w_File_lines(lua_State *L)
 			return -1;
 	}
 
-	lua_pushcclosure(L, w_File_lines_i, 5);
+	lua_pushcclosure(L, w_File_lines_i, "file_lines_i", 5);
 	return 1;
 }
 
