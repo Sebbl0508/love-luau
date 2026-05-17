@@ -223,7 +223,10 @@ int w_SpriteBatch_attachAttribute(lua_State *L)
 		mesh = luax_checktype<Mesh>(L, 3);
 		buffer = mesh->getVertexBuffer();
 		if (buffer == nullptr)
-			return luaL_error(L, "Mesh does not have its own vertex buffer.");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Mesh does not have its own vertex buffer.");
+			return -1;
 	}
 
 	luax_catchexcept(L, [&](){ t->attachAttribute(name, buffer, mesh); });

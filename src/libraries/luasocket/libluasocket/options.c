@@ -59,7 +59,10 @@ int opt_meth_getoption(lua_State *L, p_opt opt, p_socket ps)
 int opt_set_bindtodevice(lua_State *L, p_socket ps)
 {
 #ifndef SO_BINDTODEVICE
-    return luaL_error(L, "SO_BINDTODEVICE is not supported on this operating system");
+    // luaL_error should never return. Return -1 instead :)
+    // https://www.lua.org/manual/5.1/manual.html#luaL_error
+    luaL_error(L, "SO_BINDTODEVICE is not supported on this operating system");
+    return -1;
 #else
     const char *dev = luaL_checkstring(L, 3);
     return opt_set(L, ps, SOL_SOCKET, SO_BINDTODEVICE, (char*)dev, strlen(dev)+1);
@@ -69,7 +72,10 @@ int opt_set_bindtodevice(lua_State *L, p_socket ps)
 int opt_get_bindtodevice(lua_State *L, p_socket ps)
 {
 #ifndef SO_BINDTODEVICE
-    return luaL_error(L, "SO_BINDTODEVICE is not supported on this operating system");
+    // luaL_error should never return. Return -1 instead :)
+    // https://www.lua.org/manual/5.1/manual.html#luaL_error
+    luaL_error(L, "SO_BINDTODEVICE is not supported on this operating system");
+    return -1;
 #else
     char dev[IFNAMSIZ];
     int len = sizeof(dev);

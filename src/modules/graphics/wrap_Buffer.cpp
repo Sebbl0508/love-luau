@@ -219,14 +219,20 @@ static int w_Buffer_setArrayData(lua_State *L)
 	int destindex = (int) luaL_optnumber(L, 4, 1) - 1;
 
 	if (sourceindex < 0)
-		return luaL_error(L, "Source start index must be at least 1.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Source start index must be at least 1.");
+		return -1;
 
 	int count = -1;
 	if (!lua_isnoneornil(L, 5))
 	{
 		count = (int) luaL_checknumber(L, 5);
 		if (count <= 0)
-			return luaL_error(L, "Element count must be greater than 0.");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Element count must be greater than 0.");
+			return -1;
 	}
 
 	size_t stride = t->getArrayStride();
@@ -234,7 +240,10 @@ static int w_Buffer_setArrayData(lua_State *L)
 	int arraylength = (int) t->getArrayLength();
 
 	if (destindex >= arraylength || destindex < 0)
-		return luaL_error(L, "Invalid buffer start index (must be between 1 and %d)", arraylength);
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Invalid buffer start index (must be between 1 and %d)", arraylength);
+		return -1;
 
 	if (luax_istype(L, 2, Data::type))
 	{
@@ -243,7 +252,10 @@ static int w_Buffer_setArrayData(lua_State *L)
 		int dataarraylength = d->getSize() / stride;
 
 		if (sourceindex >= dataarraylength)
-			return luaL_error(L, "Invalid data start index (must be between 1 and %d)", dataarraylength);
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Invalid data start index (must be between 1 and %d)", dataarraylength);
+			return -1;
 
 		int maxcount = std::min(dataarraylength - sourceindex, arraylength - destindex);
 
@@ -251,7 +263,10 @@ static int w_Buffer_setArrayData(lua_State *L)
 			count = maxcount;
 
 		if (count > maxcount)
-			return luaL_error(L, "Too many array elements (expected at most %d, got %d)", maxcount, count);
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Too many array elements (expected at most %d, got %d)", maxcount, count);
+			return -1;
 
 		size_t dataoffset = sourceindex * stride;
 		size_t datasize = std::min(d->getSize() - dataoffset, count * stride);
@@ -277,17 +292,26 @@ static int w_Buffer_setArrayData(lua_State *L)
 	if (!tableoftables)
 	{
 		if (tablelen % ncomponents != 0)
-			return luaL_error(L, "Array length in flat array variant of Buffer:setArrayData must be a multiple of the total number of components (%d)", ncomponents);
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Array length in flat array variant of Buffer:setArrayData must be a multiple of the total number of components (%d)", ncomponents);
+			return -1;
 		tablelen /= ncomponents;
 	}
 
 	if (sourceindex >= tablelen)
-		return luaL_error(L, "Invalid data start index (must be between 1 and %d)", tablelen);
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Invalid data start index (must be between 1 and %d)", tablelen);
+		return -1;
 
 	count = count >= 0 ? std::min(count, tablelen - sourceindex) : tablelen - sourceindex;
 
 	if (destindex + count > arraylength)
-		return luaL_error(L, "Too many array elements (expected at most %d, got %d)", arraylength - destindex, count);
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Too many array elements (expected at most %d, got %d)", arraylength - destindex, count);
+		return -1;
 
 	char *data = (char *) t->map(Buffer::MAP_WRITE_INVALIDATE, bufferoffset, count * stride);
 
@@ -351,7 +375,10 @@ static int w_Buffer_clear(lua_State *L)
 		lua_Number offsetp = luaL_checknumber(L, 2);
 		lua_Number sizep = luaL_checknumber(L, 3);
 		if (offsetp < 0 || sizep < 0)
-			return luaL_error(L, "Offset and size parameters cannot be negative.");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Offset and size parameters cannot be negative.");
+			return -1;
 		offset = (size_t) offsetp;
 		size = (size_t) sizep;
 	}

@@ -103,7 +103,10 @@ int w_push(lua_State *L)
 		if (vargs.back().getType() == Variant::UNKNOWN)
 		{
 			vargs.clear();
-			return luaL_error(L, "Argument %d can't be stored safely\nExpected boolean, number, string or userdata.", i);
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Argument %d can't be stored safely\nExpected boolean, number, string or userdata.", i);
+			return -1;
 		}
 	}
 

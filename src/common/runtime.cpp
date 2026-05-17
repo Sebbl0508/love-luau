@@ -380,7 +380,10 @@ int luax_assert_argc(lua_State *L, int min)
 {
 	int argc = lua_gettop(L);
 	if (argc < min)
-		return luaL_error(L, "Incorrect number of arguments. Got [%d], expected at least [%d]", argc, min);
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Incorrect number of arguments. Got [%d], expected at least [%d]", argc, min);
+		return -1;
 	return 0;
 }
 
@@ -388,14 +391,20 @@ int luax_assert_argc(lua_State *L, int min, int max)
 {
 	int argc = lua_gettop(L);
 	if (argc < min || argc > max)
-		return luaL_error(L, "Incorrect number of arguments. Got [%d], expected [%d-%d]", argc, min, max);
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Incorrect number of arguments. Got [%d], expected [%d-%d]", argc, min, max);
+		return -1;
 	return 0;
 }
 
 int luax_assert_function(lua_State *L, int idx)
 {
 	if (!lua_isfunction(L, idx))
-		return luaL_error(L, "Argument must be of type \"function\".");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Argument must be of type \"function\".");
+		return -1;
 	return 0;
 }
 
@@ -404,9 +413,15 @@ int luax_assert_nilerror(lua_State *L, int idx)
 	if (lua_isnoneornil(L, idx))
 	{
 		if (lua_isstring(L, idx + 1))
-			return luaL_error(L, lua_tostring(L, idx + 1));
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, lua_tostring(L, idx + 1));
+			return -1;
 		else
-			return luaL_error(L, "assertion failed!");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "assertion failed!");
+			return -1;
 	}
 	return 0;
 }
@@ -600,7 +615,10 @@ int luax_register_searcher(lua_State *L, lua_CFunction f, int pos)
 	lua_getglobal(L, "package");
 
 	if (lua_isnil(L, -1))
-		return luaL_error(L, "Can't register searcher: package table does not exist.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Can't register searcher: package table does not exist.");
+		return -1;
 
 	lua_getfield(L, -1, "loaders");
 
@@ -612,7 +630,10 @@ int luax_register_searcher(lua_State *L, lua_CFunction f, int pos)
 	}
 
 	if (lua_isnil(L, -1))
-		return luaL_error(L, "Can't register searcher: package.loaders table does not exist.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Can't register searcher: package.loaders table does not exist.");
+		return -1;
 
 	lua_pushcfunction(L, f);
 	luax_table_insert(L, -2, -1, pos);
@@ -1013,7 +1034,10 @@ int luax_insistregistry(lua_State *L, Registry r)
 	case REGISTRY_OBJECTS:
 		return luax_insist(L, LUA_REGISTRYINDEX, "_loveobjects");
 	default:
-		return luaL_error(L, "Attempted to use invalid registry.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Attempted to use invalid registry.");
+		return -1;
 	}
 }
 
@@ -1027,7 +1051,10 @@ int luax_getregistry(lua_State *L, Registry r)
 		lua_getfield(L, LUA_REGISTRYINDEX, "_loveobjects");
 		return 1;
 	default:
-		return luaL_error(L, "Attempted to use invalid registry.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Attempted to use invalid registry.");
+		return -1;
 	}
 }
 
@@ -1112,7 +1139,10 @@ extern "C" int luax_typerror(lua_State *L, int narg, const char *tname)
 
 int luax_enumerror(lua_State *L, const char *enumName, const char *value)
 {
-	return luaL_error(L, "Invalid %s: %s", enumName, value);
+	// luaL_error should never return. Return -1 instead :)
+	// https://www.lua.org/manual/5.1/manual.html#luaL_error
+	luaL_error(L, "Invalid %s: %s", enumName, value);
+	return -1;
 }
 
 int luax_enumerror(lua_State *L, const char *enumName, const std::vector<std::string> &values, const char *value)
@@ -1126,7 +1156,10 @@ int luax_enumerror(lua_State *L, const char *enumName, const std::vector<std::st
 	}
 
 	std::string valueString = valueStream.str();
-	return luaL_error(L, "Invalid %s '%s', expected one of: %s", enumName, value, valueString.c_str());
+	// luaL_error should never return. Return -1 instead :)
+	// https://www.lua.org/manual/5.1/manual.html#luaL_error
+	luaL_error(L, "Invalid %s '%s', expected one of: %s", enumName, value, valueString.c_str());
+	return -1;
 }
 
 size_t luax_objlen(lua_State *L, int ndx)

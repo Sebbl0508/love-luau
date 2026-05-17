@@ -157,7 +157,10 @@ int w_updateMode(lua_State *L)
 	instance()->getWindow(w, h, settings);
 
 	if (lua_gettop(L) == 0)
-		return luaL_error(L, "Expected at least one argument");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Expected at least one argument");
+		return -1;
 
 	int idx = 1;
 	if (lua_isnumber(L, 1))
@@ -263,7 +266,10 @@ int w_getDisplayOrientation(lua_State *L)
 
 	const char *orientationstr = nullptr;
 	if (!Window::getConstant(instance()->getDisplayOrientation(displayindex), orientationstr))
-		return luaL_error(L, "Unknown display orientation type.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Unknown display orientation type.");
+		return -1;
 
 	lua_pushstring(L, orientationstr);
 	return 1;
@@ -598,7 +604,10 @@ int w_showMessageBox(lua_State *L)
 	{
 		size_t numbuttons = luax_objlen(L, 3);
 		if (numbuttons == 0)
-			return luaL_error(L, "Must have at least one messagebox button.");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Must have at least one messagebox button.");
+			return -1;
 
 		// Array of button names.
 		for (size_t i = 0; i < numbuttons; i++)

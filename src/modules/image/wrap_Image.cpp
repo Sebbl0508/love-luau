@@ -42,7 +42,10 @@ int w_newImageData(lua_State *L)
 		int w = (int) luaL_checkinteger(L, 1);
 		int h = (int) luaL_checkinteger(L, 2);
 		if (w <= 0 || h <= 0)
-			return luaL_error(L, "Invalid image size.");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Invalid image size.");
+			return -1;
 
 		PixelFormat format = PIXELFORMAT_RGBA8_UNORM;
 
@@ -73,7 +76,10 @@ int w_newImageData(lua_State *L)
 			if (numbytes != t->getSize())
 			{
 				t->release();
-				return luaL_error(L, "The size of the raw byte string must match the ImageData's actual size in bytes.");
+				// luaL_error should never return. Return -1 instead :)
+				// https://www.lua.org/manual/5.1/manual.html#luaL_error
+				luaL_error(L, "The size of the raw byte string must match the ImageData's actual size in bytes.");
+				return -1;
 			}
 
 			memcpy(t->getData(), bytes, t->getSize());

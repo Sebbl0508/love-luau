@@ -699,7 +699,10 @@ int luax_catchexcept(lua_State *L, const T& func)
 	}
 
 	if (should_error)
-		return luaL_error(L, "%s", lua_tostring(L, -1));
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "%s", lua_tostring(L, -1));
+		return -1;
 
 	return 0;
 }
@@ -722,7 +725,10 @@ int luax_catchexcept(lua_State *L, const T& func, const F& finallyfunc)
 	finallyfunc(should_error);
 
 	if (should_error)
-		return luaL_error(L, "%s", lua_tostring(L, -1));
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "%s", lua_tostring(L, -1));
+		return -1;
 
 	return 0;
 }

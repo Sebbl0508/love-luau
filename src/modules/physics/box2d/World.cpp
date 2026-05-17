@@ -651,7 +651,10 @@ int World::rayCastAny(lua_State *L)
 	{
 		Shape *f = (Shape *)(raycast.hitFixture->GetUserData().pointer);
 		if (f == nullptr)
-			return luaL_error(L, "A Shape has escaped Memoizer!");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "A Shape has escaped Memoizer!");
+			return -1;
 		luax_pushshape(L, f);
 
 		b2Vec2 hitPoint = Physics::scaleUp(raycast.hitPoint);
@@ -680,7 +683,10 @@ int World::rayCastClosest(lua_State *L)
 	{
 		Shape *f = (Shape *)(raycast.hitFixture->GetUserData().pointer);
 		if (f == nullptr)
-			return luaL_error(L, "A Shape has escaped Memoizer!");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "A Shape has escaped Memoizer!");
+			return -1;
 		luax_pushshape(L, f);
 
 		b2Vec2 hitPoint = Physics::scaleUp(raycast.hitPoint);

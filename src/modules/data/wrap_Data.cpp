@@ -47,10 +47,16 @@ int w_Data_getString(lua_State *L)
 		: (int64) luaL_checknumber(L, 3);
 
 	if (size <= 0)
-		return luaL_error(L, "Invalid size parameter (must be greater than 0)");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Invalid size parameter (must be greater than 0)");
+		return -1;
 
 	if (offset < 0 || offset + size > (int64) t->getSize())
-		return luaL_error(L, "The given offset and size parameters don't fit within the Data's size.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "The given offset and size parameters don't fit within the Data's size.");
+		return -1;
 
 	auto data = (const char *) t->getData() + offset;
 
@@ -107,10 +113,16 @@ static int w_Data_getT(lua_State* L)
 	int count = (int)luaL_optinteger(L, 3, 1);
 
 	if (count <= 0)
-		return luaL_error(L, "Invalid count parameter (must be greater than 0)");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Invalid count parameter (must be greater than 0)");
+		return -1;
 
 	if (offset < 0 || offset + sizeof(T) * count > t->getSize())
-		return luaL_error(L, "The given offset and count parameters don't fit within the Data's size.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "The given offset and count parameters don't fit within the Data's size.");
+		return -1;
 
 	auto data = (const T*)((uint8*)t->getData() + offset);
 

@@ -83,7 +83,10 @@ int w_setIdentity(lua_State *L)
 	bool append = luax_optboolean(L, 2, false);
 
 	if (!instance()->setIdentity(arg, append))
-		return luaL_error(L, "Could not set write directory.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Could not set write directory.");
+		return -1;
 
 	return 0;
 }
@@ -99,7 +102,10 @@ int w_setSource(lua_State *L)
 	const char *arg = luaL_checkstring(L, 1);
 
 	if (!instance()->setSource(arg))
-		return luaL_error(L, "Could not set source.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Could not set source.");
+		return -1;
 
 	return 0;
 }
@@ -567,7 +573,10 @@ int w_getInfo(lua_State *L)
 
 		const char *typestr = nullptr;
 		if (!Filesystem::getConstant(info.type, typestr))
-			return luaL_error(L, "Unknown file type.");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Unknown file type.");
+			return -1;
 
 		if (lua_istable(L, startidx))
 			lua_pushvalue(L, startidx);
@@ -782,7 +791,10 @@ int w_load(lua_State *L)
 	{
 		// Unsupported
 		data->release();
-		return luaL_error(L, "only \"bt\" is supported on this Lua interpreter\n");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "only \"bt\" is supported on this Lua interpreter\n");
+		return -1;
 	}
 #endif
 
@@ -792,9 +804,15 @@ int w_load(lua_State *L)
 	switch (status)
 	{
 	case LUA_ERRMEM:
-		return luaL_error(L, "Memory allocation error: %s\n", lua_tostring(L, -1));
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Memory allocation error: %s\n", lua_tostring(L, -1));
+		return -1;
 	case LUA_ERRSYNTAX:
-		return luaL_error(L, "Syntax error: %s\n", lua_tostring(L, -1));
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Syntax error: %s\n", lua_tostring(L, -1));
+		return -1;
 	default: // success
 		return 1;
 	}

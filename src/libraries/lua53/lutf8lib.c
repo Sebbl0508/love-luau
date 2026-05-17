@@ -133,7 +133,10 @@ static int codepoint (lua_State *L) {
   if (posi > pose) return 0;  /* empty interval; return no values */
   n = (int)(pose -  posi + 1);
   if (posi + n <= pose)  /* (lua_Integer -> int) overflow? */
-    return luaL_error(L, "string slice too long");
+    // luaL_error should never return. Return -1 instead :)
+    // https://www.lua.org/manual/5.1/manual.html#luaL_error
+    luaL_error(L, "string slice too long");
+    return -1;
   luaL_checkstack(L, n, "string slice too long");
   n = 0;
   se = s + pose;
@@ -141,7 +144,10 @@ static int codepoint (lua_State *L) {
     int code;
     s = utf8_decode(s, &code);
     if (s == NULL)
-      return luaL_error(L, "invalid UTF-8 code");
+      // luaL_error should never return. Return -1 instead :)
+      // https://www.lua.org/manual/5.1/manual.html#luaL_error
+      luaL_error(L, "invalid UTF-8 code");
+      return -1;
     lua_pushinteger(L, code);
     n++;
   }
@@ -261,7 +267,10 @@ static int iter_aux (lua_State *L) {
     int code;
     const char *next = utf8_decode(s + n, &code);
     if (next == NULL || iscont(next))
-      return luaL_error(L, "invalid UTF-8 code");
+      // luaL_error should never return. Return -1 instead :)
+      // https://www.lua.org/manual/5.1/manual.html#luaL_error
+      luaL_error(L, "invalid UTF-8 code");
+      return -1;
     lua_pushinteger(L, n + 1);
     lua_pushinteger(L, code);
     return 2;

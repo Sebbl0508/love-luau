@@ -60,7 +60,10 @@ int w_ImageData_getFormat(lua_State *L)
 	const char *fstr = nullptr;
 
 	if (!getConstant(format, fstr))
-		return luaL_error(L, "Unknown pixel format.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Unknown pixel format.");
+		return -1;
 
 	lua_pushstring(L, fstr);
 	return 1;
@@ -169,7 +172,10 @@ int w_ImageData_mapPixel(lua_State *L)
 	int h  = luax_optint(L, 6, t->getHeight());
 
 	if (!(t->inside(sx, sy) && t->inside(sx+w-1, sy+h-1)))
-		return luaL_error(L, "Invalid rectangle dimensions.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Invalid rectangle dimensions.");
+		return -1;
 
 	int iw = t->getWidth();
 

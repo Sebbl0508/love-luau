@@ -70,7 +70,10 @@ int w_ParticleSystem_setBufferSize(lua_State *L)
 	ParticleSystem *t = luax_checkparticlesystem(L, 1);
 	lua_Number arg1 = luaL_checknumber(L, 2);
 	if (arg1 < 1.0 || arg1 > ParticleSystem::MAX_PARTICLES)
-		return luaL_error(L, "Invalid buffer size");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Invalid buffer size");
+		return -1;
 
 	luax_catchexcept(L, [&](){ t->setBufferSize((uint32) arg1); });
 	return 0;
@@ -101,7 +104,10 @@ int w_ParticleSystem_getInsertMode(lua_State *L)
 	mode = t->getInsertMode();
 	const char *str;
 	if (!ParticleSystem::getConstant(mode, str))
-		return luaL_error(L, "Unknown insert mode");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Unknown insert mode");
+		return -1;
 	lua_pushstring(L, str);
 	return 1;
 }
@@ -143,7 +149,10 @@ int w_ParticleSystem_setParticleLifetime(lua_State *L)
 	float arg2 = (float)luaL_optnumber(L, 3, arg1);
 
 	if (arg1 < 0.0f || arg2 < 0.0f)
-		return luaL_error(L, "Invalid particle lifetime (must be >= 0)");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Invalid particle lifetime (must be >= 0)");
+		return -1;
 
 	t->setParticleLifetime(arg1, arg2);
 	return 0;
@@ -204,7 +213,10 @@ int w_ParticleSystem_setEmissionArea(lua_State *L)
 		x = (float) luaL_checknumber(L, 3);
 		y = (float) luaL_checknumber(L, 4);
 		if (x < 0.0f || y < 0.0f)
-			return luaL_error(L, "Invalid area spread parameters (must be >= 0)");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Invalid area spread parameters (must be >= 0)");
+			return -1;
 
 		angle = (float) luaL_optnumber(L, 5, 0.0f);
 		directionRelativeToCenter = luax_optboolean(L, 6, false);
@@ -368,7 +380,10 @@ int w_ParticleSystem_setSizes(lua_State *L)
 	size_t nSizes = lua_gettop(L) - 1;
 
 	if (nSizes > 8)
-		return luaL_error(L, "At most eight (8) sizes may be used.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "At most eight (8) sizes may be used.");
+		return -1;
 
 	if (nSizes <= 1)
 	{
@@ -402,7 +417,10 @@ int w_ParticleSystem_setSizeVariation(lua_State *L)
 	ParticleSystem *t = luax_checkparticlesystem(L, 1);
 	float arg1 = (float)luaL_checknumber(L, 2);
 	if (arg1 < 0.0f || arg1 > 1.0f)
-		return luaL_error(L, "Size variation has to be between 0 and 1, inclusive.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Size variation has to be between 0 and 1, inclusive.");
+		return -1;
 
 	t->setSizeVariation(arg1);
 	return 0;
@@ -495,7 +513,10 @@ int w_ParticleSystem_setColors(lua_State *L)
 		int nColors = (int) lua_gettop(L) - 1;
 
 		if (nColors > 8)
-			return luaL_error(L, "At most eight (8) colors may be used.");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "At most eight (8) colors may be used.");
+			return -1;
 
 		std::vector<Colorf> colors(nColors);
 
@@ -527,10 +548,16 @@ int w_ParticleSystem_setColors(lua_State *L)
 		int nColors = (cargs + 3) / 4; // nColors = ceil(color_args / 4)
 
 		if (cargs != 3 && (cargs % 4 != 0 || cargs == 0))
-			return luaL_error(L, "Expected red, green, blue, and alpha. Only got %d of 4 components.", cargs % 4);
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Expected red, green, blue, and alpha. Only got %d of 4 components.", cargs % 4);
+			return -1;
 
 		if (nColors > 8)
-			return luaL_error(L, "At most eight (8) colors may be used.");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "At most eight (8) colors may be used.");
+			return -1;
 
 		std::vector<Colorf> colors(nColors);
 

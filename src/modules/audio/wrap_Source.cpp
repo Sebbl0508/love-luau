@@ -72,10 +72,16 @@ int w_Source_setPitch(lua_State *L)
 	Source *t = luax_checksource(L, 1);
 	float p = (float)luaL_checknumber(L, 2);
 	if (p != p)
-		return luaL_error(L, "Pitch cannot be NaN.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Pitch cannot be NaN.");
+		return -1;
 	if (p > std::numeric_limits<lua_Number>::max() ||
 			p <= 0.0f)
-		return luaL_error(L, "Pitch has to be non-zero, positive, finite number.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Pitch has to be non-zero, positive, finite number.");
+		return -1;
 	t->setPitch(p);
 	return 0;
 }
@@ -274,7 +280,10 @@ int w_Source_setVolumeLimits(lua_State *L)
 	float vmin = (float)luaL_checknumber(L, 2);
 	float vmax = (float)luaL_checknumber(L, 3);
 	if (vmin < .0f || vmin > 1.f || vmax < .0f || vmax > 1.f)
-		return luaL_error(L, "Invalid volume limits: [%f:%f]. Must be in [0:1]", vmin, vmax);
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Invalid volume limits: [%f:%f]. Must be in [0:1]", vmin, vmax);
+		return -1;
 	t->setMinVolume(vmin);
 	t->setMaxVolume(vmax);
 	return 0;
@@ -294,7 +303,10 @@ int w_Source_setAttenuationDistances(lua_State *L)
 	float dref = (float)luaL_checknumber(L, 2);
 	float dmax = (float)luaL_checknumber(L, 3);
 	if (dref < .0f || dmax < .0f)
-		return luaL_error(L, "Invalid distances: %f, %f. Must be > 0", dref, dmax);
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Invalid distances: %f, %f. Must be > 0", dref, dmax);
+		return -1;
 	luax_catchexcept(L, [&]() {
 		t->setReferenceDistance(dref);
 		t->setMaxDistance(dmax);
@@ -317,7 +329,10 @@ int w_Source_setRolloff(lua_State *L)
 	Source *t = luax_checksource(L, 1);
 	float rolloff = (float)luaL_checknumber(L, 2);
 	if (rolloff < .0f)
-		return luaL_error(L, "Invalid rolloff: %f. Must be > 0.", rolloff);
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Invalid rolloff: %f. Must be > 0.", rolloff);
+		return -1;
 	luax_catchexcept(L, [&](){ t->setRolloffFactor(rolloff); });
 	return 0;
 }
@@ -334,7 +349,10 @@ int w_Source_setAirAbsorption(lua_State *L)
 	Source *t = luax_checksource(L, 1);
 	float factor = (float)luaL_checknumber(L, 2);
 	if (factor < 0.0f)
-		return luaL_error(L, "Invalid air absorption factor: %f. Must be > 0.", factor);
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Invalid air absorption factor: %f. Must be > 0.", factor);
+		return -1;
 	luax_catchexcept(L, [&](){ t->setAirAbsorptionFactor(factor); });
 	return 0;
 }
@@ -366,7 +384,10 @@ int setFilterReadFilter(lua_State *L, int idx, std::map<Filter::Parameter, float
 	lua_pushstring(L, paramstr);
 	lua_rawget(L, idx);
 	if (lua_type(L, -1) == LUA_TNIL)
-		return luaL_error(L, "Filter type not specificed.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Filter type not specificed.");
+		return -1;
 
 	Filter::Type type = Filter::TYPE_MAX_ENUM;
 	const char *typestr = luaL_checkstring(L, -1);
@@ -559,7 +580,10 @@ int w_Source_queue(lua_State *L)
 			length = luaL_checknumber(L, 3);
 
 		if (offset < 0 || length > s->getSize() - offset)
-			return luaL_error(L, "Data region out of bounds.");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Data region out of bounds.");
+			return -1;
 
 		luax_catchexcept(L, [&]() {
 			success = t->queue((unsigned char *)s->getData() + offset, length,
@@ -575,7 +599,10 @@ int w_Source_queue(lua_State *L)
 		int channels = luaL_checknumber(L, 7);
 
 		if (length < 0 || offset < 0)
-			return luaL_error(L, "Data region out of bounds.");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Data region out of bounds.");
+			return -1;
 
 		luax_catchexcept(L, [&]() {
 			success = t->queue((void*)((uintptr_t)lua_touserdata(L, 2) + (uintptr_t)offset), length, sampleRate, bitDepth, channels);
@@ -595,7 +622,10 @@ int w_Source_getType(lua_State *L)
 	const char *str = nullptr;
 
 	if (!Source::getConstant(type, str))
-		return luaL_error(L, "Unknown Source type.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Unknown Source type.");
+		return -1;
 
 	lua_pushstring(L, str);
 	return 1;

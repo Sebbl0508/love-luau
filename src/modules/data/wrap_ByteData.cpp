@@ -57,7 +57,10 @@ int w_ByteData_setString(lua_State *L)
 		return 0;
 
 	if (offset < 0 || offset + (int64) size > (int64) t->getSize())
-		return luaL_error(L, "The given string offset and size don't fit within the Data's size.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "The given string offset and size don't fit within the Data's size.");
+		return -1;
 
 	memcpy((char *) t->getData() + (size_t) offset, str, size);
 	return 0;
@@ -73,7 +76,10 @@ static int w_ByteData_setT(lua_State *L)
 	int nargs = std::max(1, istable ? (int) luax_objlen(L, 3) : lua_gettop(L) - 2);
 
 	if (offset < 0 || offset + sizeof(T) * nargs > t->getSize())
-		return luaL_error(L, "The given offset and value parameters don't fit within the Data's size.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "The given offset and value parameters don't fit within the Data's size.");
+		return -1;
 
 	auto data = (T *)((uint8 *) t->getData() + offset);
 

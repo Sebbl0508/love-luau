@@ -47,7 +47,10 @@ int w_Cursor_getType(lua_State *L)
 	}
 
 	if (!typestr)
-		return luaL_error(L, "Unknown cursor type.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Unknown cursor type.");
+		return -1;
 
 	lua_pushstring(L, typestr);
 	return 1;

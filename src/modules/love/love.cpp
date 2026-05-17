@@ -270,7 +270,10 @@ static int w_print_sdl_log(lua_State *L)
 
 		const char *s = lua_tostring(L, -1);
 		if (s == nullptr)
-			return luaL_error(L, "'tostring' must return a string to 'print'");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "'tostring' must return a string to 'print'");
+			return -1;
 
 		if (i > 1)
 			outstring += "\t";
@@ -771,7 +774,10 @@ int w__openConsole(lua_State *L)
 	const char *err = nullptr;
 	bool isopen = love_openConsole(err);
 	if (err != nullptr)
-		return luaL_error(L, err);
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, err);
+		return -1;
 	love::luax_pushboolean(L, isopen);
 	return 1;
 }

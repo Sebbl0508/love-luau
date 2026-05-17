@@ -134,7 +134,10 @@ int w_getScancodeFromKey(lua_State *L)
 
 	const char *scancodestr;
 	if (!Keyboard::getConstant(scancode, scancodestr))
-		return luaL_error(L, "Unknown scancode.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Unknown scancode.");
+		return -1;
 
 	lua_pushstring(L, scancodestr);
 	return 1;
@@ -151,7 +154,10 @@ int w_getKeyFromScancode(lua_State *L)
 
 	const char *keystr;
 	if (!Keyboard::getConstant(key, keystr))
-		return luaL_error(L, "Unknown key constant");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Unknown key constant");
+		return -1;
 
 	lua_pushstring(L, keystr);
 	return 1;

@@ -57,7 +57,10 @@ int w_newSource(lua_State *L)
 				return luax_enumerror(L, "source type", Source::getConstants(stype), stypestr);
 
 			if (stype == Source::TYPE_QUEUE)
-				return luaL_error(L, "Cannot create queueable sources using newSource. Use newQueueableSource instead.");
+				// luaL_error should never return. Return -1 instead :)
+				// https://www.lua.org/manual/5.1/manual.html#luaL_error
+				luaL_error(L, "Cannot create queueable sources using newSource. Use newQueueableSource instead.");
+				return -1;
 		}
 
 		if (love::filesystem::luax_cangetdata(L, 1))
@@ -365,7 +368,10 @@ int w_setEffect(lua_State *L)
 	lua_pushstring(L, paramstr);
 	lua_rawget(L, 2);
 	if (lua_type(L, -1) == LUA_TNIL)
-		return luaL_error(L, "Effect type not specificed.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Effect type not specificed.");
+		return -1;
 
 	Effect::Type type = Effect::TYPE_MAX_ENUM;
 	const char *typestr = luaL_checkstring(L, -1);
@@ -417,7 +423,10 @@ int w_setEffect(lua_State *L)
 				paramstr = lua_tostring(L, -1);
 				Effect::Direction direction;
 				if (!Effect::getConstant(paramstr, direction))
-					return luaL_error(L, "Invalid direction type: %s", paramstr);
+					// luaL_error should never return. Return -1 instead :)
+					// https://www.lua.org/manual/5.1/manual.html#luaL_error
+					luaL_error(L, "Invalid direction type: %s", paramstr);
+					return -1;
 				params[param] = static_cast<int>(direction);
 				break;
 			}
@@ -428,7 +437,10 @@ int w_setEffect(lua_State *L)
 				paramstr = lua_tostring(L, -1);
 				Effect::Phoneme phoneme;
 				if (!Effect::getConstant(basicstr, phoneme))
-					return luaL_error(L, "Invalid phoneme type: %s", paramstr);
+					// luaL_error should never return. Return -1 instead :)
+					// https://www.lua.org/manual/5.1/manual.html#luaL_error
+					luaL_error(L, "Invalid phoneme type: %s", paramstr);
+					return -1;
 				params[param] = static_cast<int>(phoneme);
 				break;
 			}
@@ -708,7 +720,10 @@ extern "C" int luaopen_love_audio(lua_State *L)
 	}
 
 	if (instance == nullptr)
-		return luaL_error(L, "Could not open any audio module.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Could not open any audio module.");
+		return -1;
 
 	WrappedModule w;
 	w.module = instance;

@@ -179,9 +179,15 @@ int w_Texture_getFilter(lua_State *L)
 	const char *magstr = nullptr;
 
 	if (!SamplerState::getConstant(s.minFilter, minstr))
-		return luaL_error(L, "Unknown filter mode.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Unknown filter mode.");
+		return -1;
 	if (!SamplerState::getConstant(s.magFilter, magstr))
-		return luaL_error(L, "Unknown filter mode.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Unknown filter mode.");
+		return -1;
 
 	lua_pushstring(L, minstr);
 	lua_pushstring(L, magstr);
@@ -255,11 +261,20 @@ int w_Texture_getWrap(lua_State *L)
 	const char *rstr = nullptr;
 
 	if (!SamplerState::getConstant(s.wrapU, sstr))
-		return luaL_error(L, "Unknown wrap mode.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Unknown wrap mode.");
+		return -1;
 	if (!SamplerState::getConstant(s.wrapV, tstr))
-		return luaL_error(L, "Unknown wrap mode.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Unknown wrap mode.");
+		return -1;
 	if (!SamplerState::getConstant(s.wrapW, rstr))
-		return luaL_error(L, "Unknown wrap mode.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Unknown wrap mode.");
+		return -1;
 
 	lua_pushstring(L, sstr);
 	lua_pushstring(L, tstr);
@@ -273,7 +288,10 @@ int w_Texture_getFormat(lua_State *L)
 	PixelFormat format = t->getPixelFormat();
 	const char *str;
 	if (!getConstant(format, str))
-		return luaL_error(L, "Unknown pixel format.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Unknown pixel format.");
+		return -1;
 
 	lua_pushstring(L, str);
 	return 1;
@@ -310,7 +328,10 @@ int w_Texture_getViewFormats(lua_State *L)
 	{
 		const char *str = nullptr;
 		if (!getConstant(viewformats[i], str))
-			return luaL_error(L, "Unknown pixel format.");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Unknown pixel format.");
+			return -1;
 		lua_pushstring(L, str);
 		lua_rawseti(L, -2, i + 1);
 	}
@@ -346,7 +367,10 @@ int w_Texture_getDepthSampleMode(lua_State *L)
 	{
 		const char *str = nullptr;
 		if (!getConstant(s.depthSampleMode.value, str))
-			return luaL_error(L, "Unknown compare mode.");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Unknown compare mode.");
+			return -1;
 		lua_pushstring(L, str);
 	}
 	else
@@ -412,7 +436,10 @@ int w_Texture_replacePixels(lua_State *L)
 			srcmip = (int) luaL_checkinteger(L, 8) - 1;
 
 		if (srcmip < 0 || srcmip >= cid->getMipmapCount())
-			return luaL_error(L, "Invalid source mipmap level.");
+			// luaL_error should never return. Return -1 instead :)
+			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			luaL_error(L, "Invalid source mipmap level.");
+			return -1;
 
 		luax_catchexcept(L, [&](){ t->replacePixels(cid->getSlice(0, srcmip), slice, dstmip, x, y, reloadmipmaps); });
 	}
@@ -446,7 +473,10 @@ int w_Texture_newImageData(lua_State *L)
 
 	auto gfx = Module::getInstance<Graphics>(Module::M_GRAPHICS);
 	if (gfx == nullptr)
-		return luaL_error(L, "Cannot find Graphics module.");
+		// luaL_error should never return. Return -1 instead :)
+		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		luaL_error(L, "Cannot find Graphics module.");
+		return -1;
 
 	love::image::ImageData *img = nullptr;
 	luax_catchexcept(L, [&](){ img = gfx->readbackTexture(t, slice, mipmap, rect, nullptr, 0, 0); });
