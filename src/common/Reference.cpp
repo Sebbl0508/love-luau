@@ -50,7 +50,7 @@ void Reference::ref(lua_State *L)
 	pinnedL = luax_getpinnedthread(L);
 	luax_insist(L, LUA_REGISTRYINDEX, REFERENCE_TABLE_NAME);
 	lua_insert(L, -2); // Move reference table behind value.
-	idx = luaL_ref(L, -2);
+	idx = lua_ref(L, -2);
 	lua_pop(L, 1);
 }
 
