@@ -25,7 +25,7 @@
 #endif
 
 #include "lua.h"
-#include "lauxlib.h"
+//#include "lauxlib.h"
 #include "compat.h"
 
 /*-------------------------------------------------------------------------*\

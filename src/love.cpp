@@ -33,7 +33,7 @@
 extern "C" {
 	#include <lua.h>
 	#include <lualib.h>
-	#include <lauxlib.h>
+	//#include <lauxlib.h>
 }
 
 #ifdef LOVE_WINDOWS
