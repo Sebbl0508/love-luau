@@ -1,0 +1,4 @@
+[submodule "vendor/luau"]
+	path = vendor/luau
+	url = https://github.com/Sebbl0508/luau.git
+	branch = v0.721

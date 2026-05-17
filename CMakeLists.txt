@@ -63,9 +63,9 @@ set(LOVE_VERSION_STR "${LOVE_VERSION_MAJOR}.${LOVE_VERSION_MINOR}")
 
 message(STATUS "Version: ${LOVE_VERSION_STR}")
 
-set(LOVE_EXE_NAME love CACHE STRING "The name of the executable, usually 'love'")
+set(LOVE_EXE_NAME love-luau CACHE STRING "The name of the executable, usually 'love'")
 
-set(LOVE_DEFAULT_LIB_NAME liblove)
+set(LOVE_DEFAULT_LIB_NAME liblove-luau)
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 	set(LOVE_DEFAULT_LIB_NAME "${LOVE_EXE_NAME}-${LOVE_VERSION_STR}")
 endif()
@@ -88,16 +88,16 @@ else()
 	set(LOVE_DEFAULT_JIT TRUE)
 endif()
 
-option(LOVE_JIT "Use LuaJIT" ${LOVE_DEFAULT_JIT})
+#option(LOVE_JIT "Use LuaJIT" ${LOVE_DEFAULT_JIT})
 
-if(LOVE_JIT)
-	if(APPLE)
-		message(WARNING "JIT not supported yet on Mac.")
-	endif()
-	message(STATUS "LuaJIT: Enabled")
-else()
-	message(STATUS "LuaJIT: Disabled")
-endif()
+#if(LOVE_JIT)
+#	if(APPLE)
+#		message(WARNING "JIT not supported yet on Mac.")
+#	endif()
+#	message(STATUS "LuaJIT: Enabled")
+#else()
+#	message(STATUS "LuaJIT: Disabled")
+#endif()
 
 message(STATUS "Target platform: ${LOVE_TARGET_PLATFORM}")
 
@@ -146,24 +146,25 @@ if(MEGA)
 	target_link_libraries(lovedep::Ogg INTERFACE ${MEGA_LIBOGG})
 	target_link_libraries(lovedep::Zlib INTERFACE ${MEGA_ZLIB})
 
-	if(LOVE_JIT)
-		target_include_directories(lovedep::Lua INTERFACE ${MEGA_LUAJIT_INCLUDE})
-		target_link_libraries(lovedep::Lua INTERFACE ${MEGA_LUAJIT_LIB})
-		set(LOVE_EXTRA_DLLS ${LOVE_EXTRA_DLLS} ${MEGA_LUAJIT_DLL})
-		set(LOVE_EXTRA_DEPENDECIES luajit)
-		set(LOVE_MOVE_DLLS
-			${LOVE_MOVE_DLLS}
-			${MEGA_LUAJIT_DLL}
-		)
-	else()
-		# MEGA_LUA51 is a CMake target, so includes are handled
-		# automatically.
-		target_link_libraries(lovedep::Lua INTERFACE ${MEGA_LUA51})
-		set(LOVE_MOVE_DLLS
-			${LOVE_MOVE_DLLS}
-			${MEGA_LUA51}
-		)
-	endif()
+    message(FATAL_ERROR "MEGA build not supported yet")
+#	if(LOVE_JIT)
+#		target_include_directories(lovedep::Lua INTERFACE ${MEGA_LUAJIT_INCLUDE})
+#		target_link_libraries(lovedep::Lua INTERFACE ${MEGA_LUAJIT_LIB})
+#		set(LOVE_EXTRA_DLLS ${LOVE_EXTRA_DLLS} ${MEGA_LUAJIT_DLL})
+#		set(LOVE_EXTRA_DEPENDECIES luajit)
+#		set(LOVE_MOVE_DLLS
+#			${LOVE_MOVE_DLLS}
+#			${MEGA_LUAJIT_DLL}
+#		)
+#	else()
+#		# MEGA_LUA51 is a CMake target, so includes are handled
+#		# automatically.
+#		target_link_libraries(lovedep::Lua INTERFACE ${MEGA_LUA51})
+#		set(LOVE_MOVE_DLLS
+#			${LOVE_MOVE_DLLS}
+#			${MEGA_LUA51}
+#		)
+#	endif()
 else()
 	if(MSVC OR ANDROID)
 		message(FATAL_ERROR "
@@ -211,15 +212,26 @@ Please see https://github.com/love2d/megasource
 	target_include_directories(lovedep::Zlib INTERFACE ${ZLIB_INCLUDE_DIRS})
 	target_link_libraries(lovedep::Zlib INTERFACE ${ZLIB_LIBRARY})
 
-	if(LOVE_JIT)
-		find_package(LuaJIT REQUIRED)
-		target_include_directories(lovedep::Lua INTERFACE ${LUAJIT_INCLUDE_DIR})
-		target_link_libraries(lovedep::Lua INTERFACE ${LUAJIT_LIBRARY})
-	else()
-		find_package(Lua51 REQUIRED)
-		target_include_directories(lovedep::Lua INTERFACE ${LUA_INCLUDE_DIR})
-		target_link_libraries(lovedep::Lua INTERFACE ${LUA_LIBRARY})
-	endif()
+    add_subdirectory(vendor/luau)
+    target_include_directories(lovedep::Lua INTERFACE
+        $<TARGET_PROPERTY:Luau.Compiler,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:Luau.VM,INTERFACE_INCLUDE_DIRECTORIES>
+    )
+    target_link_libraries(lovedep::Lua INTERFACE
+        Luau.Compiler
+        Luau.VM
+#        $<TARGET_PROPERTY:Luau.Compiler,INTERFACE_LINK_LIBRARIES>
+#        $<TARGET_PROPERTY:Luau.VM,INTERFACE_LINK_LIBRARIES>
+    )
+#	if(LOVE_JIT)
+#		find_package(LuaJIT REQUIRED)
+#		target_include_directories(lovedep::Lua INTERFACE ${LUAJIT_INCLUDE_DIR})
+#		target_link_libraries(lovedep::Lua INTERFACE ${LUAJIT_LIBRARY})
+#	else()
+#		find_package(Lua51 REQUIRED)
+#		target_include_directories(lovedep::Lua INTERFACE ${LUA_INCLUDE_DIR})
+#		target_link_libraries(lovedep::Lua INTERFACE ${LUA_LIBRARY})
+#	endif()
 endif()
 
 ###
