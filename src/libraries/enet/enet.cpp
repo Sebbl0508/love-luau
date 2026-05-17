@@ -375,7 +375,10 @@ static int host_service(lua_State *l) {
 
 	out = enet_host_service(host, &event, timeout);
 	if (out == 0) return 0;
-	if (out < 0) return luaL_error(l, "Error during service");
+	if (out < 0) {
+        luaL_error(l, "Error during service");
+        return -1;
+    }
 
 	push_event(l, &event);
 	return 1;
@@ -395,7 +398,10 @@ static int host_check_events(lua_State *l) {
 	ENetEvent event;
 	int out = enet_host_check_events(host, &event);
 	if (out == 0) return 0;
-	if (out < 0) return luaL_error(l, "Error checking event");
+	if (out < 0) {
+        luaL_error(l, "Error checking event");
+        return -1;
+    }
 
 	push_event(l, &event);
 	return 1;

@@ -882,11 +882,20 @@ void luax_pushvariant(lua_State *L, const Variant &v)
 int luax_getfunction(lua_State *L, const char *mod, const char *fn)
 {
 	lua_getglobal(L, "love");
-	if (lua_isnil(L, -1)) return luaL_error(L, "Could not find global love!");
+	if (lua_isnil(L, -1)) {
+		luaL_error(L, "Could not find global love!");
+		return -1;
+	}
 	lua_getfield(L, -1, mod);
-	if (lua_isnil(L, -1)) return luaL_error(L, "Could not find love.%s!", mod);
+	if (lua_isnil(L, -1)) {
+		luaL_error(L, "Could not find love.%s!", mod);
+		return -1;
+	}
 	lua_getfield(L, -1, fn);
-	if (lua_isnil(L, -1)) return luaL_error(L, "Could not find love.%s.%s!", mod, fn);
+	if (lua_isnil(L, -1)) {
+	    luaL_error(L, "Could not find love.%s.%s!", mod, fn);
+		return -1;
+	}
 
 	lua_remove(L, -2); // remove mod
 	lua_remove(L, -2); // remove fn
