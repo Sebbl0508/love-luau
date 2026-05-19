@@ -594,6 +594,32 @@ static int luax_require_impl(lua_State *L)
 	return 0;
 }
 
+static int luax_collectgarbage(lua_State *L)
+{
+	const char *option = luaL_optstring(L, 1, "collect");
+	if (strcmp(option, "collect") == 0)
+	{
+		lua_gc(L, LUA_GCCOLLECT, 0);
+		lua_pushnumber(L, 0);
+		return 1;
+	}
+	else if (strcmp(option, "count") == 0)
+	{
+		int kb = lua_gc(L, LUA_GCCOUNT, 0);
+		int b  = lua_gc(L, LUA_GCCOUNTB, 0);
+		lua_pushnumber(L, (double)kb + b / 1024.0);
+		lua_pushnumber(L, (double)b);
+		return 2;
+	}
+	else if (strcmp(option, "isrunning") == 0)
+	{
+		lua_pushboolean(L, 1);
+		return 1;
+	}
+	luaL_error(L, "bad argument #1 to 'collectgarbage' (invalid option '%s')", option);
+	return 0;
+}
+
 void luax_setup_package(lua_State *L)
 {
 	// Build the package table that Love2D (and Lua code) depend on.
@@ -617,6 +643,27 @@ void luax_setup_package(lua_State *L)
 	// Register our require implementation as the global require.
 	lua_pushcfunction(L, luax_require_impl, "require");
 	lua_setglobal(L, "require");
+
+	// collectgarbage is not in Luau's luaL_openlibs — register a compatible shim.
+	lua_pushcfunction(L, luax_collectgarbage, "collectgarbage");
+	lua_setglobal(L, "collectgarbage");
+
+	// os.getenv is omitted from Luau's sandboxed os library — add it back.
+	lua_getglobal(L, "os");
+	if (lua_istable(L, -1))
+	{
+		lua_pushcfunction(L, [](lua_State *L) -> int {
+			const char *name = luaL_checkstring(L, 1);
+			const char *val = getenv(name);
+			if (val)
+				lua_pushstring(L, val);
+			else
+				lua_pushnil(L);
+			return 1;
+		}, "os.getenv");
+		lua_setfield(L, -2, "getenv");
+	}
+	lua_pop(L, 1);
 }
 
 int luax_preload(lua_State *L, lua_CFunction f, const char *name)
