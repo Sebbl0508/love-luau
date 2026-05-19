@@ -113,7 +113,7 @@ function love.boot()
 			full_source = love.path.getFull(nouri)
 			local source_leaf = love.path.leaf(full_source)
 
-			if source_leaf:match("%.lua$") then
+			if source_leaf:match("%.luau?$") then
 				main_file = source_leaf
 				custom_main_file = true
 				full_source = love.path.getFull(full_source:sub(1, -(#source_leaf + 1)))
@@ -133,7 +133,14 @@ function love.boot()
 		identity = love.path.leaf(exepath)
 	end
 
-	-- Try to use the archive containing main.lua as the identity name. It
+	-- Prefer .luau entry points over .lua when no explicit file was given.
+	if can_has_game and not custom_main_file then
+		if love.filesystem.getInfo("main.luau") then
+			main_file = "main.luau"
+		end
+	end
+
+	-- Try to use the archive containing main.lua/main.luau as the identity name.
 	-- might not be available, in which case the fallbacks above are used.
 	local realdir = love.filesystem.getRealDirectory(main_file)
 	if realdir then
@@ -149,7 +156,7 @@ function love.boot()
 	-- before the save directory (the identity should be appended.)
 	pcall(love.filesystem.setIdentity, identity, true)
 
-	if can_has_game and not (love.filesystem.getInfo(main_file) or (not custom_main_file and love.filesystem.getInfo("conf.lua"))) then
+	if can_has_game and not (love.filesystem.getInfo(main_file) or (not custom_main_file and (love.filesystem.getInfo("conf.lua") or love.filesystem.getInfo("conf.luau")))) then
 		no_game_code = true
 	end
 
@@ -246,7 +253,7 @@ function love.init()
 
 	-- If config file exists, load it and allow it to update config table.
 	local confok, conferr
-	if (not love.conf) and love.filesystem and love.filesystem.getInfo("conf.lua") then
+	if (not love.conf) and love.filesystem and (love.filesystem.getInfo("conf.lua") or love.filesystem.getInfo("conf.luau")) then
 		confok, conferr = pcall(require, "conf")
 	end
 
@@ -441,7 +448,7 @@ function love.init()
 		love.filesystem._setAndroidSaveExternal(c.externalstorage)
 		love.filesystem.setIdentity(c.identity or love.filesystem.getIdentity(), c.appendidentity)
 		if love.filesystem.getInfo(main_file) then
-			require(main_file:gsub("%.lua$", ""))
+			require(main_file:gsub("%.luau?$", ""))
 		end
 	end
 
