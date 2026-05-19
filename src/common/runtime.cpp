@@ -493,6 +493,132 @@ int luax_register_module(lua_State *L, const WrappedModule &m)
 	return 1;
 }
 
+// Searcher #1: check package.preload[name]
+static int luax_preload_searcher(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+	lua_getglobal(L, "package");
+	lua_getfield(L, -1, "preload");
+	lua_getfield(L, -1, name);
+	lua_remove(L, -2); // remove preload table
+	lua_remove(L, -2); // remove package table
+	if (lua_isnil(L, -1))
+	{
+		lua_pop(L, 1);
+		lua_pushfstring(L, "no field package.preload['%s']", name);
+	}
+	return 1;
+}
+
+// require(name): check package.loaded, then iterate package.loaders/searchers.
+static int luax_require_impl(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+
+	// Return cached result if already loaded.
+	lua_getglobal(L, "package");
+	lua_getfield(L, -1, "loaded");
+	lua_getfield(L, -1, name);
+	if (!lua_isnil(L, -1))
+	{
+		lua_remove(L, -2);
+		lua_remove(L, -2);
+		return 1;
+	}
+	lua_pop(L, 3); // pop nil, loaded, package
+
+	// Collect error messages from all searchers for the final error.
+	lua_newtable(L); // errs table at stack top
+	int errs_idx = lua_gettop(L);
+
+	// Try package.loaders (Lua 5.1) then package.searchers (Lua 5.2+).
+	for (const char *field : {"loaders", "searchers"})
+	{
+		lua_getglobal(L, "package");
+		lua_getfield(L, -1, field);
+		lua_remove(L, -2);
+		if (lua_isnil(L, -1)) { lua_pop(L, 1); continue; }
+
+		int n = (int)lua_objlen(L, -1);
+		for (int i = 1; i <= n; i++)
+		{
+			lua_rawgeti(L, -1, i); // get searcher function
+			lua_pushstring(L, name);
+			lua_call(L, 1, 1); // searcher(name) -> loader or errmsg
+
+			if (lua_isfunction(L, -1))
+			{
+				lua_remove(L, -2); // remove loaders table
+				// Call the loader.
+				lua_pushstring(L, name);
+				lua_call(L, 1, 1);
+				if (lua_isnil(L, -1))
+				{
+					lua_pop(L, 1);
+					lua_pushboolean(L, 1);
+				}
+				// Cache in package.loaded.
+				lua_getglobal(L, "package");
+				lua_getfield(L, -1, "loaded");
+				lua_pushvalue(L, -3);
+				lua_setfield(L, -2, name);
+				lua_pop(L, 2);
+				lua_remove(L, -2); // remove errs table
+				return 1;
+			}
+			else if (lua_isstring(L, -1))
+			{
+				int errs_n = (int)lua_objlen(L, errs_idx) + 1;
+				lua_rawseti(L, errs_idx, errs_n);
+			}
+			else
+				lua_pop(L, 1);
+		}
+		lua_pop(L, 1); // pop loaders table
+		break; // only need one of loaders/searchers
+	}
+
+	// Build error from all collected messages.
+	lua_pushfstring(L, "module '%s' not found:", name);
+	int n_errs = (int)lua_objlen(L, errs_idx);
+	for (int i = 1; i <= n_errs; i++)
+	{
+		lua_rawgeti(L, errs_idx, i);
+		const char *s = lua_tostring(L, -1);
+		lua_pop(L, 1);
+		lua_pushfstring(L, "%s\n\t%s", lua_tostring(L, -1), s ? s : "?");
+		lua_remove(L, -2);
+	}
+	lua_remove(L, -2); // remove errs table
+	lua_error(L);
+	return 0;
+}
+
+void luax_setup_package(lua_State *L)
+{
+	// Build the package table that Love2D (and Lua code) depend on.
+	lua_newtable(L);
+
+	lua_newtable(L); lua_setfield(L, -2, "preload");
+	lua_newtable(L); lua_setfield(L, -2, "loaded");
+
+	// loaders[1] = preload searcher
+	lua_newtable(L);
+	lua_pushcfunction(L, luax_preload_searcher, "preload_searcher");
+	lua_rawseti(L, -2, 1);
+	lua_setfield(L, -2, "loaders");
+
+	// searchers is an alias for loaders (Lua 5.2+ name)
+	lua_getfield(L, -1, "loaders");
+	lua_setfield(L, -2, "searchers");
+
+	lua_setglobal(L, "package");
+
+	// Register our require implementation as the global require.
+	lua_pushcfunction(L, luax_require_impl, "require");
+	lua_setglobal(L, "require");
+}
+
 int luax_preload(lua_State *L, lua_CFunction f, const char *name)
 {
 	lua_getglobal(L, "package");

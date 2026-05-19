@@ -189,6 +189,7 @@ static DoneAction runlove(int argc, char **argv, int &retval, love::Variant &res
 	// Create the virtual machine.
 	lua_State *L = luaL_newstate();
 	luaL_openlibs(L);
+	love::luax_setup_package(L);
 
 	// LuaJIT-specific setup needs to be done as early as possible - before
 	// get_app_arguments because that loads external library code. This is also

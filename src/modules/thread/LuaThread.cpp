@@ -54,6 +54,7 @@ void LuaThread::threadFunction()
 
 	lua_State *L = luaL_newstate();
 	luaL_openlibs(L);
+	luax_setup_package(L);
 
 #ifdef LOVE_BUILD_STANDALONE
 	// Call LuaJIT-specific setup again. While it's quite late to call it at

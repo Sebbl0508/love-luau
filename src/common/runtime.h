@@ -315,6 +315,13 @@ int luax_require(lua_State *L, const char *name);
 int luax_register_module(lua_State *L, const WrappedModule &m);
 
 /**
+ * Sets up a minimal package/require system for Luau, which does not provide
+ * package.preload, package.loaders, or require out of the box.
+ * Must be called after luaL_openlibs and before any luax_preload calls.
+ **/
+void luax_setup_package(lua_State *L);
+
+/**
  * Inserts a module with 'name' into the package.preloaded table.
  * @param f The function to be called when the module is opened.
  * @param name The name of the module, with 'love'-prefix, for instance 'love.graphics'.
