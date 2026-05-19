@@ -83,10 +83,10 @@ int w_setIdentity(lua_State *L)
 	bool append = luax_optboolean(L, 2, false);
 
 	if (!instance()->setIdentity(arg, append))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Could not set write directory.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	return 0;
 }
@@ -102,10 +102,10 @@ int w_setSource(lua_State *L)
 	const char *arg = luaL_checkstring(L, 1);
 
 	if (!instance()->setSource(arg))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Could not set source.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	return 0;
 }
@@ -353,7 +353,7 @@ FileData *luax_getfiledata(lua_State *L, int idx, bool ioerror, int &nresults)
 
 	if (!data && !file)
 	{
-		nresults = luaL_argerror(L, idx, "filename, File, or FileData expected");
+		luaL_argerror(L, idx, "filename, File, or FileData expected");
 		return nullptr; // Never reached.
 	}
 	else if (file && !data)
@@ -368,7 +368,7 @@ FileData *luax_getfiledata(lua_State *L, int idx, bool ioerror, int &nresults)
 			if (ioerror)
 				nresults = luax_ioError(L, "%s", e.what());
 			else
-				nresults = luaL_error(L, "%s", e.what());
+				luaL_error(L, "%s", e.what());
 			return nullptr; // Never reached if ioerror is false.
 		}
 
@@ -456,7 +456,10 @@ int w_newFileData(lua_State *L)
 	else if (lua_isstring(L, 1))
 		ptr = luaL_checklstring(L, 1, &length);
 	else
-		return luaL_argerror(L, 1, "string or Data expected");
+		{
+			luaL_argerror(L, 1, "string or Data expected");
+			return -1; // unreachable
+		}
 
 	const char *filename = luaL_checkstring(L, 2);
 
@@ -573,10 +576,10 @@ int w_getInfo(lua_State *L)
 
 		const char *typestr = nullptr;
 		if (!Filesystem::getConstant(info.type, typestr))
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Unknown file type.");
-			return -1;
+				return -1; // unreachable
+			}
 
 		if (lua_istable(L, startidx))
 			lua_pushvalue(L, startidx);
@@ -683,7 +686,10 @@ static int w_write_or_append(lua_State *L, File::Mode mode)
 	else if (lua_isstring(L, 2))
 		input = lua_tolstring(L, 2, &len);
 	else
-		return luaL_argerror(L, 2, "string or Data expected");
+		{
+			luaL_argerror(L, 2, "string or Data expected");
+			return -1; // unreachable
+		}
 
 	// Get how much we should write. Length of string default.
 	len = luaL_optinteger(L, 3, len);
@@ -744,7 +750,10 @@ int w_lines(lua_State *L)
 		file->release();
 	}
 	else
-		return luaL_argerror(L, 1, "expected filename.");
+		{
+			luaL_argerror(L, 1, "expected filename.");
+			return -1; // unreachable
+		}
 
 	lua_pushstring(L, ""); // buffer
 	lua_pushstring(L, 0); // buffer offset
@@ -791,10 +800,10 @@ int w_load(lua_State *L)
 	{
 		// Unsupported
 		data->release();
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "only \"bt\" is supported on this Lua interpreter\n");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 #endif
 
@@ -804,15 +813,15 @@ int w_load(lua_State *L)
 	switch (status)
 	{
 	case LUA_ERRMEM:
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Memory allocation error: %s\n", lua_tostring(L, -1));
-		return -1;
+			return -1; // unreachable
+		}
 	case LUA_ERRSYNTAX:
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Syntax error: %s\n", lua_tostring(L, -1));
-		return -1;
+			return -1; // unreachable
+		}
 	default: // success
 		return 1;
 	}

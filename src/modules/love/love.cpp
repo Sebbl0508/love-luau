@@ -270,10 +270,10 @@ static int w_print_sdl_log(lua_State *L)
 
 		const char *s = lua_tostring(L, -1);
 		if (s == nullptr)
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "'tostring' must return a string to 'print'");
-			return -1;
+				return -1; // unreachable
+			}
 
 		if (i > 1)
 			outstring += "\t";
@@ -667,15 +667,8 @@ int luaopen_love(lua_State *L)
 	love::luax_preload(L, luaopen_https, "https");
 #endif
 
-#ifdef LOVE_ENABLE_WINDOW
-	// In some environments, LuaJIT is limited to 2GB and LuaJIT sometimes panic when it
-	// reaches OOM and closes the whole program, leaving the user confused about what's
-	// going on.
-	// We can't recover the state at this point, but it's better to inform user that
-	// something very bad happening instead of silently exiting.
-	// Note that this is not foolproof. In some cases, the whole process crashes by
-	// uncaught exception that LuaJIT throws or simply exit as if calling
-	// love.event.quit("not enough memory")
+#if defined(LOVE_ENABLE_WINDOW) && defined(LUA_VERSION_NUM)
+	// lua_atpanic is not available in Luau; this handler is for LuaJIT/Lua only.
 	lua_atpanic(L, [](lua_State *L)
 	{
 		using namespace love;
@@ -774,10 +767,10 @@ int w__openConsole(lua_State *L)
 	const char *err = nullptr;
 	bool isopen = love_openConsole(err);
 	if (err != nullptr)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, err);
-		return -1;
+			return -1; // unreachable
+		}
 	love::luax_pushboolean(L, isopen);
 	return 1;
 }

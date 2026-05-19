@@ -362,10 +362,10 @@ static int linked_version(lua_State *l) {
 static int host_service(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 	ENetEvent event;
 	int timeout = 0, out;
@@ -390,10 +390,10 @@ static int host_service(lua_State *l) {
 static int host_check_events(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 	ENetEvent event;
 	int out = enet_host_check_events(host, &event);
@@ -414,10 +414,10 @@ static int host_check_events(lua_State *l) {
 static int host_compress_with_range_coder(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 
 	int result = enet_host_compress_with_range_coder (host);
@@ -440,10 +440,10 @@ static int host_compress_with_range_coder(lua_State *l) {
 static int host_connect(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 	ENetAddress address;
 	ENetPeer *peer;
@@ -464,10 +464,10 @@ static int host_connect(lua_State *l) {
 	peer = enet_host_connect(host, &address, channel_count, data);
 
 	if (peer == NULL) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Failed to create peer");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 
 	push_peer(l, peer);
@@ -478,10 +478,10 @@ static int host_connect(lua_State *l) {
 static int host_flush(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 	enet_host_flush(host);
 	return 0;
@@ -490,10 +490,10 @@ static int host_flush(lua_State *l) {
 static int host_broadcast(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 
 	enet_uint8 channel_id;
@@ -506,10 +506,10 @@ static int host_broadcast(lua_State *l) {
 static int host_channel_limit(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 	int limit = (int) luaL_checknumber(l, 2);
 	enet_host_channel_limit(host, limit);
@@ -519,10 +519,10 @@ static int host_channel_limit(lua_State *l) {
 static int host_bandwidth_limit(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 	enet_uint32 in_bandwidth = (int) luaL_checknumber(l, 2);
 	enet_uint32 out_bandwidth = (int) luaL_checknumber(l, 2);
@@ -533,10 +533,10 @@ static int host_bandwidth_limit(lua_State *l) {
 static int host_get_socket_address(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 	ENetAddress address;
 	enet_socket_get_address (host->socket, &address);
@@ -552,10 +552,10 @@ static int host_get_socket_address(lua_State *l) {
 static int host_total_sent_data(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 
 	lua_pushinteger (l, host->totalSentData);
@@ -566,10 +566,10 @@ static int host_total_sent_data(lua_State *l) {
 static int host_total_received_data(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 
 	lua_pushinteger (l, host->totalReceivedData);
@@ -579,10 +579,10 @@ static int host_total_received_data(lua_State *l) {
 static int host_service_time(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 
 	lua_pushinteger (l, host->serviceTime);
@@ -593,10 +593,10 @@ static int host_service_time(lua_State *l) {
 static int host_peer_count(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 
 	lua_pushinteger (l, host->peerCount);
@@ -607,10 +607,10 @@ static int host_peer_count(lua_State *l) {
 static int host_get_peer(lua_State *l) {
 	ENetHost *host = check_host(l, 1);
 	if (!host) {
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(l, "Tried to index a nil host!");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 
 	int peer_index = (int) luaL_checknumber(l, 2) - 1;

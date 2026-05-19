@@ -98,7 +98,10 @@ int w_Decoder_seek(lua_State *L)
 	Decoder *t = luax_checkdecoder(L, 1);
 	double offset = luaL_checknumber(L, 2);
 	if (offset < 0)
-		return luaL_argerror(L, 2, "can't seek to a negative position");
+		{
+			luaL_argerror(L, 2, "can't seek to a negative position");
+			return -1; // unreachable
+		}
 	else if (offset == 0)
 		t->rewind();
 	else

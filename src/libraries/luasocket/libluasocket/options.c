@@ -7,6 +7,7 @@
 #include "options.h"
 #include "inet.h"
 #include <string.h>
+#include <stdio.h>
 
 /*=========================================================================*\
 * Internal functions prototypes

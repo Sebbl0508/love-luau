@@ -111,10 +111,10 @@ int w_ChainShape_getPoints(lua_State *L)
 	luax_catchexcept(L, [&]() { verts = c->getPoints(); });
 	int count = c->getVertexCount();
 	if (!lua_checkstack(L, count*2))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Too many return values");
-		return -1;
+			return -1; // unreachable
+		}
 	for (int i = 0; i < count; i++)
 	{
 		b2Vec2 v = Physics::scaleUp(verts[i]);

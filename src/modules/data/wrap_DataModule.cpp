@@ -60,10 +60,10 @@ int w_newDataView(lua_State *L)
 	lua_Integer size = luaL_optinteger(L, 3, data->getSize() - offset);
 
 	if (offset < 0 || size < 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "DataView offset and size must not be negative.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	DataView *d;
 	luax_catchexcept(L, [&]() { d = instance()->newDataView(data, (size_t) offset, (size_t) size); });
@@ -82,29 +82,29 @@ int w_newByteData(lua_State *L)
 		Data *data = luax_checkdata(L, 1);
 
 		if (data->getSize() > std::numeric_limits<lua_Integer>::max())
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Data's size is too large!");
-			return -1;
+				return -1; // unreachable
+			}
 
 		lua_Integer offset = luaL_optinteger(L, 2, 0);
 		if (offset < 0)
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Offset argument must not be negative.");
-			return -1;
+				return -1; // unreachable
+			}
 
 		lua_Integer size = luaL_optinteger(L, 3, data->getSize() - offset);
 		if (size <= 0)
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Size argument must be greater than zero.");
-			return -1;
+				return -1; // unreachable
+			}
 		else if ((size_t)(offset + size) > data->getSize())
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Offset and size arguments must fit within the given Data's size.");
-			return -1;
+				return -1; // unreachable
+			}
 
 		const char *bytes = (const char *) data->getData() + offset;
 		luax_catchexcept(L, [&]() { d = instance()->newByteData(bytes, (size_t) size); });
@@ -119,10 +119,10 @@ int w_newByteData(lua_State *L)
 	{
 		lua_Integer size = luaL_checkinteger(L, 1);
 		if (size <= 0)
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Data size must be a positive number.");
-			return -1;
+				return -1; // unreachable
+			}
 		luax_catchexcept(L, [&]() { d = instance()->newByteData((size_t) size); });
 	}
 
@@ -383,10 +383,10 @@ int w_pack(lua_State *L)
 		if (offset + b.nelems > d->getSize())
 		{
 			lua53_cleanupbuffer(&b);
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "The given byte offset and pack format parameters do not fit within the ByteData's size.");
-			return -1;
+				return -1; // unreachable
+			}
 		}
 
 		memcpy((uint8 *) d->getData() + offset, b.ptr, b.nelems);

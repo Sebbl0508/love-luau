@@ -148,10 +148,10 @@ int w_newPolygonBody(lua_State *L)
 		argc = (int)luax_objlen(L, 3);
 
 	if (argc % 2 != 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Number of vertex components must be a multiple of two.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	int vcount = argc / 2;
 	std::vector<Vector2> coords;
@@ -244,10 +244,10 @@ int w_newChainBody(lua_State *L)
 		argc = (int)luax_objlen(L, 4);
 
 	if (argc == 0 || argc % 2 != 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Number of vertex components must be a multiple of two.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	int vcount = argc / 2;
 	std::vector<Vector2> coords;
@@ -338,10 +338,10 @@ int w_newCircleShape(lua_State *L)
 		return 1;
 	}
 	else
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Incorrect number of parameters");
-		return -1;
+			return -1; // unreachable
+		}
 }
 
 int w_newRectangleShape(lua_State *L)
@@ -375,10 +375,10 @@ int w_newRectangleShape(lua_State *L)
 		return 1;
 	}
 	else
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Incorrect number of parameters");
-		return -1;
+			return -1; // unreachable
+		}
 }
 
 int w_newEdgeShape(lua_State *L)
@@ -421,10 +421,10 @@ int w_newPolygonShape(lua_State *L)
 		argc = (int)luax_objlen(L, bodyidx + 1);
 
 	if (argc % 2 != 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Number of vertex components must be a multiple of two.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	int vcount = argc / 2;
 	std::vector<Vector2> coords;
@@ -471,10 +471,10 @@ int w_newChainShape(lua_State *L)
 		argc = (int)luax_objlen(L, bodyidx + 2);
 
 	if (argc == 0 || argc % 2 != 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Number of vertex components must be a multiple of two.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	int vcount = argc / 2;
 	bool loop = luax_checkboolean(L, bodyidx + 1);

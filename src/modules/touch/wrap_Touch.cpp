@@ -108,10 +108,10 @@ int w_getDeviceType(lua_State *L)
 
 	const char *typestr = nullptr;
 	if (!Touch::getConstant(touch.deviceType, typestr))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown touch device type.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	lua_pushstring(L, typestr);
 	return 1;

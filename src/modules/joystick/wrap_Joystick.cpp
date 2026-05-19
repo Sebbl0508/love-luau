@@ -298,10 +298,10 @@ int w_Joystick_getGamepadMapping(lua_State *L)
 
 	const char *inputtypestr;
 	if (!Joystick::getConstant(jinput.type, inputtypestr))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown joystick input type.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	lua_pushstring(L, inputtypestr);
 
@@ -322,15 +322,15 @@ int w_Joystick_getGamepadMapping(lua_State *L)
 			return 3;
 		}
 		else
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Unknown joystick hat.");
-			return -1;
+				return -1; // unreachable
+			}
 	default:
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown joystick input type.");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 	
 	return 1;

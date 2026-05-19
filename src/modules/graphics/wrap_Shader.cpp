@@ -323,10 +323,10 @@ static int w_Shader_sendLuaValues(lua_State *L, int startidx, Shader *shader, co
 	case Shader::UNIFORM_STORAGEBUFFER:
 		return w_Shader_sendBuffers(L, startidx, shader, info);
 	default:
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown variable type for shader uniform '%s", name);
-		return -1;
+			return -1; // unreachable
+		}
 	}
 }
 
@@ -334,10 +334,10 @@ static int w_Shader_sendData(lua_State *L, int startidx, Shader *shader, const S
 {
 	if (info->baseType == Shader::UNIFORM_SAMPLER || info->baseType == Shader::UNIFORM_STORAGETEXTURE
 		|| info->baseType == Shader::UNIFORM_TEXELBUFFER || info->baseType == Shader::UNIFORM_STORAGEBUFFER)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Only value types (floats, ints, vectors, matrices, etc) be sent to Shaders via Data objects.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	math::Transform::MatrixLayout layout = math::Transform::MATRIX_ROW_MAJOR;
 	int dataidx = startidx;
@@ -373,15 +373,15 @@ static int w_Shader_sendData(lua_State *L, int startidx, Shader *shader, const S
 
 	ptrdiff_t offset = (ptrdiff_t) luaL_optinteger(L, startidx + 1, 0);
 	if (offset < 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Offset cannot be negative.");
-		return -1;
+			return -1; // unreachable
+		}
 	else if ((size_t) offset >= size)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Offset must be less than the size of the Data.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	size_t uniformstride = info->dataSizePacked / info->count;
 
@@ -389,25 +389,25 @@ static int w_Shader_sendData(lua_State *L, int startidx, Shader *shader, const S
 	{
 		lua_Integer sizearg = luaL_checkinteger(L, startidx + 2);
 		if (sizearg <= 0)
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Size must be greater than 0.");
-			return -1;
+				return -1; // unreachable
+			}
 		else if ((size_t) sizearg > size - offset)
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Size and offset must fit within the Data's bounds.");
-			return -1;
+				return -1; // unreachable
+			}
 		else if (sizearg % uniformstride != 0)
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Size (%d) must be a multiple of the uniform's size in bytes (%d).", sizearg, uniformstride);
-			return -1;
+				return -1; // unreachable
+			}
 		else if ((size_t) sizearg > info->dataSizePacked)
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Size must not be greater than the uniform's total size in bytes.");
-			return -1;
+				return -1; // unreachable
+			}
 
 		size = (size_t) sizearg;
 	}
@@ -418,10 +418,10 @@ static int w_Shader_sendData(lua_State *L, int startidx, Shader *shader, const S
 	}
 
 	if (size == 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Size to copy must be greater than 0.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	int count = (int) (size / uniformstride);
 	const char *mem = (const char *) data->getData() + offset;
@@ -474,10 +474,10 @@ int w_Shader_send(lua_State *L)
 
 	const Shader::UniformInfo *info = shader->getUniformInfo(name);
 	if (info == nullptr || !info->active)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Shader uniform '%s' does not exist.\nA common error is to define but not use the variable.", name);
-		return -1;
+			return -1; // unreachable
+		}
 
 	if (luax_istype(L, 3, Data::type) || (info->baseType == Shader::UNIFORM_MATRIX && luax_istype(L, 4, Data::type)))
 		return w_Shader_sendData(L, 3, shader, info, false);
@@ -492,16 +492,16 @@ int w_Shader_sendColors(lua_State *L)
 
 	const Shader::UniformInfo *info = shader->getUniformInfo(name);
 	if (info == nullptr || !info->active)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Shader uniform '%s' does not exist.\nA common error is to define but not use the variable.", name);
-		return -1;
+			return -1; // unreachable
+		}
 
 	if (info->baseType != Shader::UNIFORM_FLOAT || info->components < 3)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Shader:sendColor can only be used with vec3 or vec4 uniforms.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	if (luax_istype(L, 3, Data::type))
 		w_Shader_sendData(L, 3, shader, info, true);

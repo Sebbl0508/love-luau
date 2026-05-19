@@ -350,7 +350,8 @@ bool luax_checkboolflag(lua_State *L, int table_index, const char *key)
 	if (lua_type(L, -1) != LUA_TBOOLEAN)
 	{
 		std::string err = "expected boolean field '" + std::string(key) + "' in table";
-		return luaL_argerror(L, table_index, err.c_str());
+		luaL_argerror(L, table_index, err.c_str());
+		return false; // unreachable
 	}
 	else
 		retval = luax_toboolean(L, -1);
@@ -367,7 +368,8 @@ int luax_checkintflag(lua_State *L, int table_index, const char *key)
 	if (!lua_isnumber(L, -1))
 	{
 		std::string err = "expected integer field '" + std::string(key) + "' in table";
-		return luaL_argerror(L, table_index, err.c_str());
+		luaL_argerror(L, table_index, err.c_str());
+		return -1; // unreachable
 	}
 	else
 		retval = (int) luaL_checkinteger(L, -1);
@@ -380,10 +382,10 @@ int luax_assert_argc(lua_State *L, int min)
 {
 	int argc = lua_gettop(L);
 	if (argc < min)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+	{
 		luaL_error(L, "Incorrect number of arguments. Got [%d], expected at least [%d]", argc, min);
-		return -1;
+		return -1; // unreachable
+	}
 	return 0;
 }
 
@@ -391,20 +393,20 @@ int luax_assert_argc(lua_State *L, int min, int max)
 {
 	int argc = lua_gettop(L);
 	if (argc < min || argc > max)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+	{
 		luaL_error(L, "Incorrect number of arguments. Got [%d], expected [%d-%d]", argc, min, max);
-		return -1;
+		return -1; // unreachable
+	}
 	return 0;
 }
 
 int luax_assert_function(lua_State *L, int idx)
 {
 	if (!lua_isfunction(L, idx))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+	{
 		luaL_error(L, "Argument must be of type \"function\".");
-		return -1;
+		return -1; // unreachable
+	}
 	return 0;
 }
 
@@ -413,15 +415,15 @@ int luax_assert_nilerror(lua_State *L, int idx)
 	if (lua_isnoneornil(L, idx))
 	{
 		if (lua_isstring(L, idx + 1))
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
-			luaL_error(L, lua_tostring(L, idx + 1));
-			return -1;
+		{
+			luaL_error(L, "%s", lua_tostring(L, idx + 1));
+			return -1; // unreachable
+		}
 		else
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 			luaL_error(L, "assertion failed!");
-			return -1;
+			return -1; // unreachable
+		}
 	}
 	return 0;
 }
@@ -615,10 +617,10 @@ int luax_register_searcher(lua_State *L, lua_CFunction f, int pos)
 	lua_getglobal(L, "package");
 
 	if (lua_isnil(L, -1))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Can't register searcher: package table does not exist.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	lua_getfield(L, -1, "loaders");
 
@@ -630,10 +632,10 @@ int luax_register_searcher(lua_State *L, lua_CFunction f, int pos)
 	}
 
 	if (lua_isnil(L, -1))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Can't register searcher: package.loaders table does not exist.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	lua_pushcfunction(L, f, "idk_searcher");
 	luax_table_insert(L, -2, -1, pos);
@@ -1043,10 +1045,10 @@ int luax_insistregistry(lua_State *L, Registry r)
 	case REGISTRY_OBJECTS:
 		return luax_insist(L, LUA_REGISTRYINDEX, "_loveobjects");
 	default:
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Attempted to use invalid registry.");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 }
 
@@ -1060,10 +1062,10 @@ int luax_getregistry(lua_State *L, Registry r)
 		lua_getfield(L, LUA_REGISTRYINDEX, "_loveobjects");
 		return 1;
 	default:
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Attempted to use invalid registry.");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 }
 
@@ -1143,15 +1145,16 @@ extern "C" int luax_typerror(lua_State *L, int narg, const char *tname)
 		argtname = lua_typename(L, argtype);
 
 	const char *msg = lua_pushfstring(L, "%s expected, got %s", tname, argtname);
-	return luaL_argerror(L, narg, msg);
+	luaL_argerror(L, narg, msg);
+	return -1; // unreachable
 }
 
 int luax_enumerror(lua_State *L, const char *enumName, const char *value)
 {
-	// luaL_error should never return. Return -1 instead :)
-	// https://www.lua.org/manual/5.1/manual.html#luaL_error
+	{
 	luaL_error(L, "Invalid %s: %s", enumName, value);
-	return -1;
+		return -1; // unreachable
+	}
 }
 
 int luax_enumerror(lua_State *L, const char *enumName, const std::vector<std::string> &values, const char *value)
@@ -1165,18 +1168,18 @@ int luax_enumerror(lua_State *L, const char *enumName, const std::vector<std::st
 	}
 
 	std::string valueString = valueStream.str();
-	// luaL_error should never return. Return -1 instead :)
-	// https://www.lua.org/manual/5.1/manual.html#luaL_error
+	{
 	luaL_error(L, "Invalid %s '%s', expected one of: %s", enumName, value, valueString.c_str());
-	return -1;
+		return -1; // unreachable
+	}
 }
 
 size_t luax_objlen(lua_State *L, int ndx)
 {
-#if LUA_VERSION_NUM == 501
-	return lua_objlen(L, ndx);
-#else
+#if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM >= 502
 	return lua_rawlen(L, ndx);
+#else
+	return lua_objlen(L, ndx);
 #endif
 }
 
@@ -1203,7 +1206,10 @@ void luax_runwrapper(lua_State *L, const char *filedata, size_t datalen, const c
 	{
 		std::string chunkname = std::string("=[love \"") + std::string(filename) + std::string("\"]");
 
-		luaL_loadbuffer(L, filedata, datalen, chunkname.c_str());
+		size_t bytecodeSize = 0;
+		char *bytecode = luau_compile(filedata, datalen, nullptr, &bytecodeSize);
+		luau_load(L, chunkname.c_str(), bytecode, bytecodeSize, 0);
+		free(bytecode);
 		lua_pushvalue(L, -2);
 		if (ffifuncs != nullptr)
 			luax_pushpointerasstring(L, ffifuncs);
@@ -1223,14 +1229,11 @@ Type *luax_type(lua_State *L, int idx)
 
 int luax_resume(lua_State *L, int nargs, int* nres)
 {
-#if LUA_VERSION_NUM >= 504
+#if defined(LUA_VERSION_NUM) && LUA_VERSION_NUM >= 504
 	return lua_resume(L, nullptr, nargs, nres);
-#elif LUA_VERSION_NUM >= 502
-	LOVE_UNUSED(nres);
-	return lua_resume(L, nullptr, nargs);
 #else
 	LOVE_UNUSED(nres);
-	return lua_resume(L, nargs);
+	return lua_resume(L, nullptr, nargs);
 #endif
 }
 

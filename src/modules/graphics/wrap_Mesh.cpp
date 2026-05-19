@@ -48,10 +48,10 @@ int w_Mesh_setVertices(lua_State *L)
 	{
 		vertcount = (int) luaL_checknumber(L, 4);
 		if (vertcount <= 0)
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Vertex count must be greater than 0.");
-			return -1;
+				return -1; // unreachable
+			}
 	}
 
 	size_t stride = t->getVertexStride();
@@ -59,10 +59,10 @@ int w_Mesh_setVertices(lua_State *L)
 	int totalverts = (int) t->getVertexCount();
 
 	if (vertstart >= totalverts || vertstart < 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Invalid vertex start index (must be between 1 and %d)", totalverts);
-		return -1;
+			return -1; // unreachable
+		}
 
 	if (luax_istype(L, 2, Data::type))
 	{
@@ -70,10 +70,10 @@ int w_Mesh_setVertices(lua_State *L)
 
 		vertcount = vertcount >= 0 ? vertcount : (totalverts - vertstart);
 		if (vertstart + vertcount > totalverts)
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Too many vertices (expected at most %d, got %d)", totalverts - vertstart, vertcount);
-			return -1;
+				return -1; // unreachable
+			}
 
 		size_t datasize = std::min(d->getSize(), vertcount * stride);
 		char *bytedata = (char *) t->getVertexData() + byteoffset;
@@ -91,10 +91,10 @@ int w_Mesh_setVertices(lua_State *L)
 
 	vertcount = vertcount >= 0 ? std::min(vertcount, tablelen) : tablelen;
 	if (vertstart + vertcount > totalverts)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Too many vertices (expected at most %d, got %d)", totalverts - vertstart, vertcount);
-		return -1;
+			return -1; // unreachable
+		}
 
 	const std::vector<Buffer::DataMember> &vertexformat = t->getVertexFormat();
 
@@ -209,10 +209,10 @@ int w_Mesh_setVertexAttribute(lua_State *L)
 	const auto &vertexformat = t->getVertexFormat();
 
 	if (attribindex < 0 || attribindex >= (int) vertexformat.size())
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Invalid vertex attribute index: %d", attribindex + 1);
-		return -1;
+			return -1; // unreachable
+		}
 
 	const Buffer::DataMember &member = vertexformat[attribindex];
 
@@ -236,10 +236,10 @@ int w_Mesh_getVertexAttribute(lua_State *L)
 	const auto &vertexformat = t->getVertexFormat();
 
 	if (attribindex < 0 || attribindex >= (int) vertexformat.size())
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Invalid vertex attribute index: %d", attribindex + 1);
-		return -1;
+			return -1; // unreachable
+		}
 
 	const Buffer::DataMember &member = vertexformat[attribindex];
 
@@ -355,10 +355,10 @@ int w_Mesh_attachAttribute(lua_State *L)
 		mesh = luax_checkmesh(L, 3);
 		buffer = mesh->getVertexBuffer();
 		if (buffer == nullptr)
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Mesh does not have its own vertex buffer.");
-			return -1;
+				return -1; // unreachable
+			}
 	}
 
 	AttributeStep step = STEP_PER_VERTEX;
@@ -416,10 +416,10 @@ int w_Mesh_getAttachedAttributes(lua_State *L)
 
 		const char *stepstr = nullptr;
 		if (!getConstant(attrib.step, stepstr))
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Invalid vertex attribute step.");
-			return -1;
+				return -1; // unreachable
+			}
 		lua_pushstring(L, stepstr);
 		lua_setfield(L, -2, "step");
 
@@ -478,10 +478,10 @@ int w_Mesh_setVertexMap(lua_State *L)
 		int indexcount = (int) luaL_optinteger(L, 4, d->getSize() / datatypesize);
 
 		if (indexcount < 1 || indexcount * datatypesize > d->getSize())
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Invalid index count: %d", indexcount);
-			return -1;
+				return -1; // unreachable
+			}
 
 		luax_catchexcept(L, [&]() { t->setVertexMap(indextype, d->getData(), indexcount * datatypesize); });
 		return 0;
@@ -603,10 +603,10 @@ int w_Mesh_getDrawMode(lua_State *L)
 	const char *str;
 
 	if (!getConstant(mode, str))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown mesh draw mode.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	lua_pushstring(L, str);
 	return 1;

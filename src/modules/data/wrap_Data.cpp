@@ -47,16 +47,16 @@ int w_Data_getString(lua_State *L)
 		: (int64) luaL_checknumber(L, 3);
 
 	if (size <= 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Invalid size parameter (must be greater than 0)");
-		return -1;
+			return -1; // unreachable
+		}
 
 	if (offset < 0 || offset + size > (int64) t->getSize())
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "The given offset and size parameters don't fit within the Data's size.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	auto data = (const char *) t->getData() + offset;
 
@@ -98,7 +98,10 @@ int w_Data_performAtomic(lua_State *L)
 
 	// Unfortunately, this eats the stack trace, too bad.
 	if (err != 0)
-		return lua_error(L);
+	{
+		lua_error(L);
+		return -1; // unreachable
+	}
 
 	// The function and everything after it in the stack are eaten by the pcall,
 	// leaving only the Data object. Everything else is a return value.
@@ -113,16 +116,16 @@ static int w_Data_getT(lua_State* L)
 	int count = (int)luaL_optinteger(L, 3, 1);
 
 	if (count <= 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Invalid count parameter (must be greater than 0)");
-		return -1;
+			return -1; // unreachable
+		}
 
 	if (offset < 0 || offset + sizeof(T) * count > t->getSize())
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "The given offset and count parameters don't fit within the Data's size.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	auto data = (const T*)((uint8*)t->getData() + offset);
 

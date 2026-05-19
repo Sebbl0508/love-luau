@@ -30,6 +30,12 @@
 #endif				/* } */
 
 
+/* lua_assert is not provided by Luau */
+#ifndef lua_assert
+#include <assert.h>
+#define lua_assert(c) assert(c)
+#endif
+
 /*
 ** Windows stuff
 */

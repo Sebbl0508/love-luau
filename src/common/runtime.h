@@ -28,18 +28,39 @@
 #include "Variant.h"
 #include "deprecation.h"
 
-// Lua
-extern "C" {
-	#define LUA_COMPAT_ALL
-	#include <lua.h>
-	#include <lualib.h>
-	//#include <lauxlib.h>
-}
+// Luau headers are C++ and must NOT be wrapped in extern "C"
+#define LUA_COMPAT_ALL
+#include <lua.h>
+#include <lualib.h>
+//#include <lauxlib.h>
+#include <luacode.h>
 
 // C++
+#include <cstdlib>
 #include <exception>
 #include <algorithm>
 #include <set>
+
+// Luau compatibility shims: luaL_loadbuffer/luaL_loadbufferx compile source to
+// bytecode and load it, matching the LuaJIT/Lua 5.x semantics at call sites.
+static inline int luaL_loadbuffer(lua_State *L, const char *buff, size_t sz, const char *name)
+{
+	size_t bytecodeSize = 0;
+	char *bytecode = luau_compile(buff, sz, nullptr, &bytecodeSize);
+	int result = ::luau_load(L, name, bytecode, bytecodeSize, 0);
+	free(bytecode);
+	return result;
+}
+
+static inline int luaL_loadbufferx(lua_State *L, const char *buff, size_t sz, const char *name, const char * /*mode*/)
+{
+	return luaL_loadbuffer(L, buff, sz, name);
+}
+
+static inline int luaL_loadstring(lua_State *L, const char *s)
+{
+	return luaL_loadbuffer(L, s, strlen(s), s);
+}
 
 namespace love
 {

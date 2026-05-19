@@ -56,10 +56,10 @@ namespace graphics
 static int luax_checkgraphicscreated(lua_State *L)
 {
 	if (!instance()->isCreated())
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "love.graphics cannot function without a window.");
-		return -1;
+			return -1; // unreachable
+		}
 	return 0;
 }
 
@@ -303,10 +303,10 @@ int w_setCanvas(lua_State *L)
 				targets.colors.emplace_back(luax_checktexture(L, -1), 0);
 
 				if (targets.colors.back().texture->getTextureType() != TEXTURE_2D)
-					// luaL_error should never return. Return -1 instead :)
-					// https://www.lua.org/manual/5.1/manual.html#luaL_error
+					{
 					luaL_error(L, "Non-2D textures must use the table-of-tables variant of setCanvas.");
-					return -1;
+						return -1; // unreachable
+					}
 			}
 
 			lua_pop(L, 1);
@@ -352,10 +352,10 @@ int w_setCanvas(lua_State *L)
 			}
 
 			if (i > 1 && type != TEXTURE_2D)
-				// luaL_error should never return. Return -1 instead :)
-				// https://www.lua.org/manual/5.1/manual.html#luaL_error
+				{
 				luaL_error(L, "This variant of setCanvas only supports 2D texture types.");
-				return -1;
+					return -1; // unreachable
+				}
 
 			targets.colors.push_back(target);
 		}
@@ -584,10 +584,10 @@ int w_setScissor(lua_State *L)
 	rect.h = (int) luaL_checkinteger(L, 4);
 
 	if (rect.w < 0 || rect.h < 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Can't set scissor with negative width and/or height.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	instance()->setScissor(rect);
 	return 0;
@@ -602,10 +602,10 @@ int w_intersectScissor(lua_State *L)
 	rect.h = (int) luaL_checkinteger(L, 4);
 
 	if (rect.w < 0 || rect.h < 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Can't set scissor with negative width and/or height.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	instance()->intersectScissor(rect);
 	return 0;
@@ -651,10 +651,10 @@ int w_getStencilMode(lua_State *L)
 
 	const char *modestr;
 	if (!getConstant(mode, modestr))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown stencil mode.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	lua_pushstring(L, modestr);
 	lua_pushinteger(L, value);
@@ -693,17 +693,17 @@ int w_getStencilState(lua_State *L)
 
 	const char *actionstr;
 	if (!getConstant(s.action, actionstr))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown stencil draw action.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	const char *comparestr;
 	if (!getConstant(s.compare, comparestr))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown compare mode.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	lua_pushstring(L, actionstr);
 	lua_pushstring(L, comparestr);
@@ -1045,10 +1045,10 @@ int w_newCubeTexture(lua_State *L)
 			if (luax_isarrayoftables(L, 1))
 			{
 				if (tlen != 6)
-					// luaL_error should never return. Return -1 instead :)
-					// https://www.lua.org/manual/5.1/manual.html#luaL_error
+					{
 					luaL_error(L, "Cubemap images must have 6 faces.");
-					return -1;
+						return -1; // unreachable
+					}
 
 				for (int face = 0; face < tlen; face++)
 				{
@@ -1493,10 +1493,10 @@ int w_newParticleSystem(lua_State *L)
 	lua_Number size = luaL_optnumber(L, 2, 1000);
 	ParticleSystem *t = nullptr;
 	if (size < 1.0 || size > ParticleSystem::MAX_PARTICLES)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Invalid ParticleSystem size");
-		return -1;
+			return -1; // unreachable
+		}
 
 	luax_catchexcept(L,
 		[&](){ t = instance()->newParticleSystem(texture, int(size)); }
@@ -1554,10 +1554,10 @@ static int w_getShaderSource(lua_State *L, int startidx, std::vector<std::string
 			{
 				const char *ext = strchr(str, '.');
 				if (ext != nullptr && !strchr(ext, ';') && !strchr(ext, ' '))
-					// luaL_error should never return. Return -1 instead :)
-					// https://www.lua.org/manual/5.1/manual.html#luaL_error
+					{
 					luaL_error(L, "Could not open file %s. Does not exist.", str);
-					return -1;
+						return -1; // unreachable
+					}
 			}
 		}
 	}
@@ -1657,7 +1657,10 @@ int w_newShader(lua_State *L)
 	}
 
 	if (should_error)
-		return lua_error(L);
+		{
+			lua_error(L);
+			return -1; // unreachable
+		}
 
 	return 1;
 }
@@ -1695,7 +1698,10 @@ int w_newComputeShader(lua_State* L)
 	}
 
 	if (should_error)
-		return lua_error(L);
+		{
+			lua_error(L);
+			return -1; // unreachable
+		}
 
 	return 1;
 }
@@ -2667,16 +2673,16 @@ int w_getBlendMode(lua_State *L)
 	BlendMode mode = instance()->getBlendMode(alphamode);
 
 	if (!getConstant(mode, str))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown blend mode");
-		return -1;
+			return -1; // unreachable
+		}
 
 	if (!getConstant(alphamode, alphastr))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown blend alpha mode");
-		return -1;
+			return -1; // unreachable
+		}
 
 	lua_pushstring(L, str);
 	lua_pushstring(L, alphastr);
@@ -2791,15 +2797,15 @@ int w_getDefaultFilter(lua_State *L)
 	const char *minstr;
 	const char *magstr;
 	if (!SamplerState::getConstant(s.minFilter, minstr))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown minification filter mode");
-		return -1;
+			return -1; // unreachable
+		}
 	if (!SamplerState::getConstant(s.magFilter, magstr))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown magnification filter mode");
-		return -1;
+			return -1; // unreachable
+		}
 	lua_pushstring(L, minstr);
 	lua_pushstring(L, magstr);
 	lua_pushnumber(L, s.maxAnisotropy);
@@ -2878,10 +2884,10 @@ int w_getLineStyle(lua_State *L)
 	Graphics::LineStyle style = instance()->getLineStyle();
 	const char *str;
 	if (!Graphics::getConstant(style, str))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown line style");
-		return -1;
+			return -1; // unreachable
+		}
 	lua_pushstring(L, str);
 	return 1;
 }
@@ -2891,10 +2897,10 @@ int w_getLineJoin(lua_State *L)
 	Graphics::LineJoin join = instance()->getLineJoin();
 	const char *str;
 	if (!Graphics::getConstant(join, str))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown line join");
-		return -1;
+			return -1; // unreachable
+		}
 	lua_pushstring(L, str);
 	return 1;
 }
@@ -2939,10 +2945,10 @@ int w_getDepthMode(lua_State *L)
 
 	const char *str;
 	if (!getConstant(compare, str))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown compare mode");
-		return -1;
+			return -1; // unreachable
+		}
 
 	lua_pushstring(L, str);
 	luax_pushboolean(L, write);
@@ -2966,10 +2972,10 @@ int w_getMeshCullMode(lua_State *L)
 	CullMode mode = instance()->getMeshCullMode();
 	const char *str;
 	if (!getConstant(mode, str))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown cull mode");
-		return -1;
+			return -1; // unreachable
+		}
 	lua_pushstring(L, str);
 	return 1;
 }
@@ -2991,10 +2997,10 @@ int w_getFrontFaceWinding(lua_State *L)
 	Winding winding = instance()->getFrontFaceWinding();
 	const char *str;
 	if (!getConstant(winding, str))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown vertex winding");
-		return -1;
+			return -1; // unreachable
+		}
 	lua_pushstring(L, str);
 	return 1;
 }
@@ -3545,10 +3551,10 @@ int w_points(lua_State *L)
 	}
 
 	if (args % 2 != 0 && !is_table_of_tables)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Number of vertex components must be a multiple of two");
-		return -1;
+			return -1; // unreachable
+		}
 
 	int numpositions = args / 2;
 	if (is_table_of_tables)
@@ -3631,15 +3637,15 @@ int w_line(lua_State *L)
 	if (arg1type != LUA_TTABLE && arg1type != LUA_TNUMBER)
 		return luax_typerror(L, 1, "table or number");
 	else if (args % 2 != 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Number of vertex components must be a multiple of two.");
-		return -1;
+			return -1; // unreachable
+		}
 	else if (args < 4)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Need at least two vertices to draw a line.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	int numvertices = args / 2;
 
@@ -3802,15 +3808,15 @@ int w_polygon(lua_State *L)
 	}
 
 	if (args % 2 != 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Number of vertex components must be a multiple of two");
-		return -1;
+			return -1; // unreachable
+		}
 	else if (args < 6)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Need at least three vertices to draw a polygon");
-		return -1;
+			return -1; // unreachable
+		}
 
 	int numvertices = args / 2;
 
@@ -3875,15 +3881,15 @@ int w_copyBuffer(lua_State *L)
 		size = luaL_checkinteger(L, 5);
 
 	if (sourceoffset < 0 || destoffset < 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "copyBuffer offsets cannot be negative.");
-		return -1;
+			return -1; // unreachable
+		}
 	if (size <= 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "copyBuffer size must be greater than 0.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	luax_catchexcept(L, [&](){ instance()->copyBuffer(source, dest, sourceoffset, destoffset, size); });
 	return 0;
@@ -3896,10 +3902,10 @@ int w_copyBufferToTexture(lua_State *L)
 
 	ptrdiff_t sourceoffset = luaL_optinteger(L, 3, 0);
 	if (sourceoffset < 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "copyBufferToTexture source offset cannot be negative.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	int sourcewidth = (int) luaL_optinteger(L, 4, 0);
 
@@ -3948,10 +3954,10 @@ int w_copyTextureToBuffer(lua_State *L)
 
 	ptrdiff_t destoffset = luaL_optinteger(L, 9, 0);
 	if (destoffset < 0)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "copyTextureToBuffer dest offset cannot be negative.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	int destwidth = (int) luaL_optinteger(L, 10, 0);
 
@@ -4298,10 +4304,10 @@ extern "C" int luaopen_love_graphics(lua_State *L)
 	if (instance == nullptr)
 	{
 		printf("Cannot create graphics: no supported renderer on this system.\n");
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Cannot create graphics: no supported renderer on this system.");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 
 	WrappedModule w;

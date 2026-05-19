@@ -73,10 +73,10 @@ int w_newRandomGenerator(lua_State *L)
 		}
 
 		if (should_error)
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "%s", lua_tostring(L, -1));
-			return -1;
+				return -1; // unreachable
+			}
 	}
 
 	luax_pushtype(L, t);
@@ -182,10 +182,10 @@ int w_triangulate(lua_State *L)
 	}
 
 	if (vertices.size() < 3)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Need at least 3 vertices to triangulate (got %d).", (int)vertices.size());
-		return -1;
+			return -1; // unreachable
+		}
 
 	std::vector<Triangle> triangles;
 

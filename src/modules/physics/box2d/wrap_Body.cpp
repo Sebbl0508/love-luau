@@ -221,10 +221,10 @@ int w_Body_applyLinearImpulse(lua_State *L)
 	}
 	else
 	{
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Wrong number of parameters.");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 
 	return 0;
@@ -270,10 +270,10 @@ int w_Body_applyForce(lua_State *L)
 	}
 	else
 	{
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Wrong number of parameters.");
-		return -1;
+			return -1; // unreachable
+		}
 	}
 
 	return 0;

@@ -57,10 +57,10 @@ int w_newSource(lua_State *L)
 				return luax_enumerror(L, "source type", Source::getConstants(stype), stypestr);
 
 			if (stype == Source::TYPE_QUEUE)
-				// luaL_error should never return. Return -1 instead :)
-				// https://www.lua.org/manual/5.1/manual.html#luaL_error
+				{
 				luaL_error(L, "Cannot create queueable sources using newSource. Use newQueueableSource instead.");
-				return -1;
+					return -1; // unreachable
+				}
 		}
 
 		if (love::filesystem::luax_cangetdata(L, 1))
@@ -368,10 +368,10 @@ int w_setEffect(lua_State *L)
 	lua_pushstring(L, paramstr);
 	lua_rawget(L, 2);
 	if (lua_type(L, -1) == LUA_TNIL)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Effect type not specificed.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	Effect::Type type = Effect::TYPE_MAX_ENUM;
 	const char *typestr = luaL_checkstring(L, -1);
@@ -391,7 +391,7 @@ int w_setEffect(lua_State *L)
 
 		if(Effect::getConstant(keystr, param, type) || Effect::getConstant(keystr, param, Effect::TYPE_BASIC))
 		{
-#define luax_effecterror(l,t) luaL_error(l,"Bad parameter type for %s %s: " t " expected, got %s", typestr, keystr, lua_typename(L, -1))
+#define luax_effecterror(l,t) (luaL_error(l,"Bad parameter type for %s %s: " t " expected, got %s", typestr, keystr, lua_typename(L, -1)), 0)
 			switch(Effect::getParameterType(param))
 			{
 			case Effect::PARAM_FLOAT:
@@ -423,10 +423,10 @@ int w_setEffect(lua_State *L)
 				paramstr = lua_tostring(L, -1);
 				Effect::Direction direction;
 				if (!Effect::getConstant(paramstr, direction))
-					// luaL_error should never return. Return -1 instead :)
-					// https://www.lua.org/manual/5.1/manual.html#luaL_error
+					{
 					luaL_error(L, "Invalid direction type: %s", paramstr);
-					return -1;
+						return -1; // unreachable
+					}
 				params[param] = static_cast<int>(direction);
 				break;
 			}
@@ -437,10 +437,10 @@ int w_setEffect(lua_State *L)
 				paramstr = lua_tostring(L, -1);
 				Effect::Phoneme phoneme;
 				if (!Effect::getConstant(basicstr, phoneme))
-					// luaL_error should never return. Return -1 instead :)
-					// https://www.lua.org/manual/5.1/manual.html#luaL_error
+					{
 					luaL_error(L, "Invalid phoneme type: %s", paramstr);
-					return -1;
+						return -1; // unreachable
+					}
 				params[param] = static_cast<int>(phoneme);
 				break;
 			}
@@ -720,10 +720,10 @@ extern "C" int luaopen_love_audio(lua_State *L)
 	}
 
 	if (instance == nullptr)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Could not open any audio module.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	WrappedModule w;
 	w.module = instance;

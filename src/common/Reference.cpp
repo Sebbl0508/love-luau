@@ -48,9 +48,8 @@ void Reference::ref(lua_State *L)
 {
 	unref(); // Previously created reference needs to be cleared
 	pinnedL = luax_getpinnedthread(L);
-	luax_insist(L, LUA_REGISTRYINDEX, REFERENCE_TABLE_NAME);
-	lua_insert(L, -2); // Move reference table behind value.
-	idx = lua_ref(L, -2);
+	// lua_ref stores value at idx in the registry; it does not pop, so we pop manually.
+	idx = lua_ref(L, -1);
 	lua_pop(L, 1);
 }
 
@@ -61,9 +60,7 @@ void Reference::unref()
 		// We use a pinned thread/coroutine for the Lua state because we know it
 		// hasn't been garbage collected and is valid, as long as the whole lua
 		// state is still open.
-		luax_insist(pinnedL, LUA_REGISTRYINDEX, REFERENCE_TABLE_NAME);
-		luaL_unref(pinnedL, -1, idx);
-		lua_pop(pinnedL, 1);
+		lua_unref(pinnedL, idx);
 		idx = LUA_REFNIL;
 	}
 }
@@ -72,9 +69,7 @@ void Reference::push(lua_State *L)
 {
 	if (idx != LUA_REFNIL)
 	{
-		luax_insist(L, LUA_REGISTRYINDEX, REFERENCE_TABLE_NAME);
-		lua_rawgeti(L, -1, idx);
-		lua_remove(L, -2);
+		lua_rawgeti(L, LUA_REGISTRYINDEX, idx);
 	}
 	else
 		lua_pushnil(L);

@@ -138,15 +138,15 @@ int w_Video_getFilter(lua_State *L)
 	const char *magstr = nullptr;
 
 	if (!SamplerState::getConstant(s.minFilter, minstr))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown filter mode.");
-		return -1;
+			return -1; // unreachable
+		}
 	if (!SamplerState::getConstant(s.magFilter, magstr))
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "Unknown filter mode.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	lua_pushstring(L, minstr);
 	lua_pushstring(L, magstr);

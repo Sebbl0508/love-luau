@@ -180,7 +180,10 @@ int w_File_write(lua_State *L)
 	}
 	else
 	{
-		return luaL_argerror(L, 2, "string or data expected");
+		{
+			luaL_argerror(L, 2, "string or data expected");
+			return -1; // unreachable
+		}
 	}
 
 	luax_pushboolean(L, result);
@@ -251,10 +254,10 @@ int w_File_lines_i(lua_State *L)
 
 	// Only accept read mode at this point.
 	if (file->getMode() != File::MODE_READ)
-		// luaL_error should never return. Return -1 instead :)
-		// https://www.lua.org/manual/5.1/manual.html#luaL_error
+		{
 		luaL_error(L, "File needs to stay in read mode.");
-		return -1;
+			return -1; // unreachable
+		}
 
 	// Get the current (lua-side) buffer info
 	size_t len;
@@ -295,10 +298,10 @@ int w_File_lines_i(lua_State *L)
 		{
 			int read = (int) file->read(readbuf, readbufsize);
 			if (read < 0)
-				// luaL_error should never return. Return -1 instead :)
-				// https://www.lua.org/manual/5.1/manual.html#luaL_error
+				{
 				luaL_error(L, "Could not read from file.");
-				return -1;
+					return -1; // unreachable
+				}
 
 			luaL_addlstring(&storage, readbuf, read);
 
@@ -370,10 +373,10 @@ int w_File_lines(lua_State *L)
 		luax_catchexcept(L, [&](){ success = file->open(File::MODE_READ); });
 
 		if (!success)
-			// luaL_error should never return. Return -1 instead :)
-			// https://www.lua.org/manual/5.1/manual.html#luaL_error
+			{
 			luaL_error(L, "Could not open file.");
-			return -1;
+				return -1; // unreachable
+			}
 	}
 
 	lua_pushcclosure(L, w_File_lines_i, "file_lines_i", 5);
